@@ -1,0 +1,8 @@
+incident_id,patient_id,incident_date,incident_type,severity
+INC001,P010,2026-08-31,Fall,Moderate
+INC002,P012,2026-08-28,Fall,High
+INC003,P015,2026-09-02,Severe Malnutrition,High
+INC004,P018,2026-08-30,Functional Deterioration,Moderate
+INC005,P021,2026-09-01,Emergency Visit,Moderate
+INC006,P005,2026-09-03,Hospitalization,High
+INC007,P006,2026-07-22,Emergency Visit,Moderate

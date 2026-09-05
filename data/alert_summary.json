@@ -1,0 +1,662 @@
+{
+  "experiment_date": "2026-09-05 17:12:51",
+  "total_patients": 19,
+  "total_incidents": 7,
+  "total_alerts": 64,
+  "true_positives": 1,
+  "false_positives": [
+    {
+      "alert_id": "ALT_P002_20260809",
+      "patient_id": "P002",
+      "alert_date": "2026-08-14",
+      "alert_severity": "LOW",
+      "composite_score": 0.303,
+      "explanation": "Mobility declined 12.8% from personal baseline for 6 consecutive days."
+    },
+    {
+      "alert_id": "ALT_P002_20260816",
+      "patient_id": "P002",
+      "alert_date": "2026-09-05",
+      "alert_severity": "MEDIUM",
+      "composite_score": 0.464,
+      "explanation": "Mobility declined 31.1% from personal baseline for 21 consecutive days."
+    },
+    {
+      "alert_id": "ALT_P003_20260708",
+      "patient_id": "P003",
+      "alert_date": "2026-07-09",
+      "alert_severity": "LOW",
+      "composite_score": 0.25,
+      "explanation": "Mobility declined 7.4% from personal baseline for 2 consecutive days."
+    },
+    {
+      "alert_id": "ALT_P003_20260816",
+      "patient_id": "P003",
+      "alert_date": "2026-08-17",
+      "alert_severity": "MEDIUM",
+      "composite_score": 0.385,
+      "explanation": "Mobility declined 6.4%, Nutrition declined 11.2%, Participation declined 6.0% from personal baseline for 2 consecutive days."
+    },
+    {
+      "alert_id": "ALT_P003_20260824",
+      "patient_id": "P003",
+      "alert_date": "2026-09-05",
+      "alert_severity": "MEDIUM",
+      "composite_score": 0.359,
+      "explanation": "Nutrition declined 23.0% from personal baseline for 13 consecutive days."
+    },
+    {
+      "alert_id": "ALT_P004_20260614",
+      "patient_id": "P004",
+      "alert_date": "2026-06-15",
+      "alert_severity": "LOW",
+      "composite_score": 0.254,
+      "explanation": "Nutrition declined 5.6%, Participation declined 6.3% from personal baseline for 2 consecutive days."
+    },
+    {
+      "alert_id": "ALT_P004_20260807",
+      "patient_id": "P004",
+      "alert_date": "2026-08-08",
+      "alert_severity": "LOW",
+      "composite_score": 0.22,
+      "explanation": "Nutrition declined 9.9% from personal baseline for 2 consecutive days."
+    },
+    {
+      "alert_id": "ALT_P004_20260824",
+      "patient_id": "P004",
+      "alert_date": "2026-09-05",
+      "alert_severity": "MEDIUM",
+      "composite_score": 0.363,
+      "explanation": "Participation declined 26.6% from personal baseline for 13 consecutive days."
+    },
+    {
+      "alert_id": "ALT_P005_20260630",
+      "patient_id": "P005",
+      "alert_date": "2026-07-01",
+      "alert_severity": "LOW",
+      "composite_score": 0.31,
+      "explanation": "Mobility declined 5.9%, Nutrition declined 6.6% from personal baseline for 2 consecutive days."
+    },
+    {
+      "alert_id": "ALT_P005_20260704",
+      "patient_id": "P005",
+      "alert_date": "2026-07-05",
+      "alert_severity": "LOW",
+      "composite_score": 0.243,
+      "explanation": "Participation declined 11.4% from personal baseline for 2 consecutive days."
+    },
+    {
+      "alert_id": "ALT_P005_20260715",
+      "patient_id": "P005",
+      "alert_date": "2026-07-16",
+      "alert_severity": "LOW",
+      "composite_score": 0.208,
+      "explanation": "Mobility declined 8.3% from personal baseline for 2 consecutive days."
+    },
+    {
+      "alert_id": "ALT_P005_20260801",
+      "patient_id": "P005",
+      "alert_date": "2026-08-02",
+      "alert_severity": "LOW",
+      "composite_score": 0.23,
+      "explanation": "Mobility declined 5.5% from personal baseline for 2 consecutive days."
+    },
+    {
+      "alert_id": "ALT_P005_20260815",
+      "patient_id": "P005",
+      "alert_date": "2026-08-16",
+      "alert_severity": "LOW",
+      "composite_score": 0.319,
+      "explanation": "Nutrition declined 6.6%, Participation declined 11.4% from personal baseline for 2 consecutive days."
+    },
+    {
+      "alert_id": "ALT_P005_20260828",
+      "patient_id": "P005",
+      "alert_date": "2026-08-29",
+      "alert_severity": "MEDIUM",
+      "composite_score": 0.365,
+      "explanation": "Mobility declined 5.7%, Participation declined 12.6% from personal baseline for 2 consecutive days."
+    },
+    {
+      "alert_id": "ALT_P005_20260831",
+      "patient_id": "P005",
+      "alert_date": "2026-09-05",
+      "alert_severity": "HIGH",
+      "composite_score": 0.572,
+      "explanation": "Mobility declined 10.7%, Nutrition declined 12.1%, Participation declined 13.1% from personal baseline for 6 consecutive days."
+    },
+    {
+      "alert_id": "ALT_P006_20260608",
+      "patient_id": "P006",
+      "alert_date": "2026-06-10",
+      "alert_severity": "LOW",
+      "composite_score": 0.246,
+      "explanation": "Participation declined 6.1% from personal baseline for 3 consecutive days."
+    },
+    {
+      "alert_id": "ALT_P006_20260702",
+      "patient_id": "P006",
+      "alert_date": "2026-07-03",
+      "alert_severity": "LOW",
+      "composite_score": 0.258,
+      "explanation": "Mobility declined 7.9% from personal baseline for 2 consecutive days."
+    },
+    {
+      "alert_id": "ALT_P006_20260713",
+      "patient_id": "P006",
+      "alert_date": "2026-09-05",
+      "alert_severity": "HIGH",
+      "composite_score": 0.878,
+      "explanation": "Mobility declined 24.0%, Nutrition declined 22.7%, Participation declined 22.4% from personal baseline for 55 consecutive days."
+    },
+    {
+      "alert_id": "ALT_P007_20260608",
+      "patient_id": "P007",
+      "alert_date": "2026-06-09",
+      "alert_severity": "MEDIUM",
+      "composite_score": 0.412,
+      "explanation": "Subtle decline pattern detected from personal baseline"
+    },
+    {
+      "alert_id": "ALT_P007_20260615",
+      "patient_id": "P007",
+      "alert_date": "2026-06-17",
+      "alert_severity": "LOW",
+      "composite_score": 0.347,
+      "explanation": "Participation declined 10.6% from personal baseline for 3 consecutive days."
+    },
+    {
+      "alert_id": "ALT_P007_20260619",
+      "patient_id": "P007",
+      "alert_date": "2026-06-20",
+      "alert_severity": "MEDIUM",
+      "composite_score": 0.423,
+      "explanation": "Mobility declined 10.0%, Participation declined 10.6% from personal baseline for 2 consecutive days."
+    },
+    {
+      "alert_id": "ALT_P007_20260626",
+      "patient_id": "P007",
+      "alert_date": "2026-06-27",
+      "alert_severity": "MEDIUM",
+      "composite_score": 0.466,
+      "explanation": "Nutrition declined 14.9% from personal baseline for 2 consecutive days."
+    },
+    {
+      "alert_id": "ALT_P007_20260630",
+      "patient_id": "P007",
+      "alert_date": "2026-07-05",
+      "alert_severity": "MEDIUM",
+      "composite_score": 0.367,
+      "explanation": "Participation declined 7.0% from personal baseline for 6 consecutive days."
+    },
+    {
+      "alert_id": "ALT_P007_20260707",
+      "patient_id": "P007",
+      "alert_date": "2026-07-08",
+      "alert_severity": "HIGH",
+      "composite_score": 0.577,
+      "explanation": "Mobility declined 7.6%, Nutrition declined 21.3%, Participation declined 13.1% from personal baseline for 2 consecutive days."
+    },
+    {
+      "alert_id": "ALT_P007_20260710",
+      "patient_id": "P007",
+      "alert_date": "2026-07-11",
+      "alert_severity": "MEDIUM",
+      "composite_score": 0.492,
+      "explanation": "Nutrition declined 10.6%, Participation declined 11.4% from personal baseline for 2 consecutive days."
+    },
+    {
+      "alert_id": "ALT_P007_20260714",
+      "patient_id": "P007",
+      "alert_date": "2026-07-15",
+      "alert_severity": "MEDIUM",
+      "composite_score": 0.461,
+      "explanation": "Nutrition declined 13.6%, Participation declined 21.4% from personal baseline for 2 consecutive days."
+    },
+    {
+      "alert_id": "ALT_P007_20260717",
+      "patient_id": "P007",
+      "alert_date": "2026-07-19",
+      "alert_severity": "MEDIUM",
+      "composite_score": 0.391,
+      "explanation": "Nutrition declined 16.2%, Participation declined 8.9% from personal baseline for 3 consecutive days."
+    },
+    {
+      "alert_id": "ALT_P007_20260723",
+      "patient_id": "P007",
+      "alert_date": "2026-07-25",
+      "alert_severity": "LOW",
+      "composite_score": 0.254,
+      "explanation": "Participation declined 11.1% from personal baseline for 3 consecutive days."
+    },
+    {
+      "alert_id": "ALT_P007_20260727",
+      "patient_id": "P007",
+      "alert_date": "2026-07-28",
+      "alert_severity": "MEDIUM",
+      "composite_score": 0.392,
+      "explanation": "Nutrition declined 7.5%, Participation declined 12.3% from personal baseline for 2 consecutive days."
+    },
+    {
+      "alert_id": "ALT_P007_20260730",
+      "patient_id": "P007",
+      "alert_date": "2026-08-02",
+      "alert_severity": "LOW",
+      "composite_score": 0.273,
+      "explanation": "Nutrition declined 14.0% from personal baseline for 4 consecutive days."
+    },
+    {
+      "alert_id": "ALT_P007_20260809",
+      "patient_id": "P007",
+      "alert_date": "2026-08-16",
+      "alert_severity": "MEDIUM",
+      "composite_score": 0.444,
+      "explanation": "Nutrition declined 10.8% from personal baseline for 8 consecutive days."
+    },
+    {
+      "alert_id": "ALT_P007_20260818",
+      "patient_id": "P007",
+      "alert_date": "2026-08-19",
+      "alert_severity": "LOW",
+      "composite_score": 0.324,
+      "explanation": "Nutrition declined 9.5% from personal baseline for 2 consecutive days."
+    },
+    {
+      "alert_id": "ALT_P007_20260824",
+      "patient_id": "P007",
+      "alert_date": "2026-08-27",
+      "alert_severity": "MEDIUM",
+      "composite_score": 0.425,
+      "explanation": "Mobility declined 8.3%, Nutrition declined 7.9% from personal baseline for 4 consecutive days."
+    },
+    {
+      "alert_id": "ALT_P007_20260902",
+      "patient_id": "P007",
+      "alert_date": "2026-09-05",
+      "alert_severity": "LOW",
+      "composite_score": 0.318,
+      "explanation": "Subtle decline pattern detected from personal baseline"
+    },
+    {
+      "alert_id": "ALT_P008_20260813",
+      "patient_id": "P008",
+      "alert_date": "2026-08-14",
+      "alert_severity": "LOW",
+      "composite_score": 0.253,
+      "explanation": "Mobility declined 7.9% from personal baseline for 2 consecutive days."
+    },
+    {
+      "alert_id": "ALT_P010_20260829",
+      "patient_id": "P010",
+      "alert_date": "2026-09-05",
+      "alert_severity": "HIGH",
+      "composite_score": 0.594,
+      "explanation": "Mobility declined 10.7%, Nutrition declined 14.1%, Participation declined 13.2% from personal baseline for 8 consecutive days."
+    },
+    {
+      "alert_id": "ALT_P011_20260630",
+      "patient_id": "P011",
+      "alert_date": "2026-07-01",
+      "alert_severity": "LOW",
+      "composite_score": 0.258,
+      "explanation": "Mobility declined 6.7% from personal baseline for 2 consecutive days."
+    },
+    {
+      "alert_id": "ALT_P011_20260715",
+      "patient_id": "P011",
+      "alert_date": "2026-07-16",
+      "alert_severity": "LOW",
+      "composite_score": 0.308,
+      "explanation": "Nutrition declined 7.3%, Participation declined 8.6% from personal baseline for 2 consecutive days."
+    },
+    {
+      "alert_id": "ALT_P011_20260830",
+      "patient_id": "P011",
+      "alert_date": "2026-08-31",
+      "alert_severity": "LOW",
+      "composite_score": 0.25,
+      "explanation": "Participation declined 11.5% from personal baseline for 2 consecutive days."
+    },
+    {
+      "alert_id": "ALT_P012_20260718",
+      "patient_id": "P012",
+      "alert_date": "2026-07-19",
+      "alert_severity": "LOW",
+      "composite_score": 0.229,
+      "explanation": "Mobility declined 9.3% from personal baseline for 2 consecutive days."
+    },
+    {
+      "alert_id": "ALT_P012_20260809",
+      "patient_id": "P012",
+      "alert_date": "2026-08-10",
+      "alert_severity": "LOW",
+      "composite_score": 0.35,
+      "explanation": "Mobility declined 8.3%, Participation declined 7.9% from personal baseline for 2 consecutive days."
+    },
+    {
+      "alert_id": "ALT_P012_20260827",
+      "patient_id": "P012",
+      "alert_date": "2026-09-05",
+      "alert_severity": "LOW",
+      "composite_score": 0.328,
+      "explanation": "Mobility declined 14.8% from personal baseline for 10 consecutive days."
+    },
+    {
+      "alert_id": "ALT_P014_20260629",
+      "patient_id": "P014",
+      "alert_date": "2026-06-30",
+      "alert_severity": "LOW",
+      "composite_score": 0.258,
+      "explanation": "Mobility declined 6.1% from personal baseline for 2 consecutive days."
+    },
+    {
+      "alert_id": "ALT_P014_20260707",
+      "patient_id": "P014",
+      "alert_date": "2026-07-08",
+      "alert_severity": "LOW",
+      "composite_score": 0.222,
+      "explanation": "Mobility declined 5.1%, Nutrition declined 5.6% from personal baseline for 2 consecutive days."
+    },
+    {
+      "alert_id": "ALT_P014_20260719",
+      "patient_id": "P014",
+      "alert_date": "2026-08-02",
+      "alert_severity": "MEDIUM",
+      "composite_score": 0.462,
+      "explanation": "Mobility declined 9.3%, Nutrition declined 11.0%, Participation declined 7.0% from personal baseline for 15 consecutive days."
+    },
+    {
+      "alert_id": "ALT_P015_20260818",
+      "patient_id": "P015",
+      "alert_date": "2026-08-19",
+      "alert_severity": "LOW",
+      "composite_score": 0.317,
+      "explanation": "Mobility declined 10.4%, Nutrition declined 7.3% from personal baseline for 2 consecutive days."
+    },
+    {
+      "alert_id": "ALT_P015_20260830",
+      "patient_id": "P015",
+      "alert_date": "2026-08-31",
+      "alert_severity": "LOW",
+      "composite_score": 0.259,
+      "explanation": "Nutrition declined 7.4% from personal baseline for 2 consecutive days."
+    },
+    {
+      "alert_id": "ALT_P015_20260904",
+      "patient_id": "P015",
+      "alert_date": "2026-09-05",
+      "alert_severity": "LOW",
+      "composite_score": 0.295,
+      "explanation": "Nutrition declined 14.2% from personal baseline for 2 consecutive days."
+    },
+    {
+      "alert_id": "ALT_P016_20260829",
+      "patient_id": "P016",
+      "alert_date": "2026-08-30",
+      "alert_severity": "LOW",
+      "composite_score": 0.26,
+      "explanation": "Nutrition declined 9.0%, Participation declined 6.2% from personal baseline for 2 consecutive days."
+    },
+    {
+      "alert_id": "ALT_P017_20260628",
+      "patient_id": "P017",
+      "alert_date": "2026-07-02",
+      "alert_severity": "MEDIUM",
+      "composite_score": 0.393,
+      "explanation": "Mobility declined 10.4%, Nutrition declined 6.3%, Participation declined 6.1% from personal baseline for 5 consecutive days."
+    },
+    {
+      "alert_id": "ALT_P017_20260716",
+      "patient_id": "P017",
+      "alert_date": "2026-07-17",
+      "alert_severity": "MEDIUM",
+      "composite_score": 0.373,
+      "explanation": "Mobility declined 11.7% from personal baseline for 2 consecutive days."
+    },
+    {
+      "alert_id": "ALT_P017_20260807",
+      "patient_id": "P017",
+      "alert_date": "2026-08-08",
+      "alert_severity": "LOW",
+      "composite_score": 0.32,
+      "explanation": "Mobility declined 9.5%, Nutrition declined 5.9% from personal baseline for 2 consecutive days."
+    },
+    {
+      "alert_id": "ALT_P017_20260902",
+      "patient_id": "P017",
+      "alert_date": "2026-09-03",
+      "alert_severity": "LOW",
+      "composite_score": 0.261,
+      "explanation": "Mobility declined 11.5% from personal baseline for 2 consecutive days."
+    },
+    {
+      "alert_id": "ALT_P018_20260807",
+      "patient_id": "P018",
+      "alert_date": "2026-08-08",
+      "alert_severity": "LOW",
+      "composite_score": 0.229,
+      "explanation": "Nutrition declined 5.4% from personal baseline for 2 consecutive days."
+    },
+    {
+      "alert_id": "ALT_P018_20260901",
+      "patient_id": "P018",
+      "alert_date": "2026-09-05",
+      "alert_severity": "LOW",
+      "composite_score": 0.328,
+      "explanation": "Participation declined 19.7% from personal baseline for 5 consecutive days."
+    },
+    {
+      "alert_id": "ALT_P019_20260608",
+      "patient_id": "P019",
+      "alert_date": "2026-07-02",
+      "alert_severity": "HIGH",
+      "composite_score": 0.831,
+      "explanation": "Mobility declined 17.6%, Participation declined 5.2% from personal baseline for 25 consecutive days."
+    },
+    {
+      "alert_id": "ALT_P019_20260704",
+      "patient_id": "P019",
+      "alert_date": "2026-07-11",
+      "alert_severity": "MEDIUM",
+      "composite_score": 0.442,
+      "explanation": "Subtle decline pattern detected from personal baseline"
+    },
+    {
+      "alert_id": "ALT_P019_20260713",
+      "patient_id": "P019",
+      "alert_date": "2026-07-15",
+      "alert_severity": "MEDIUM",
+      "composite_score": 0.412,
+      "explanation": "Subtle decline pattern detected from personal baseline"
+    },
+    {
+      "alert_id": "ALT_P019_20260717",
+      "patient_id": "P019",
+      "alert_date": "2026-09-05",
+      "alert_severity": "HIGH",
+      "composite_score": 0.927,
+      "explanation": "Mobility declined 27.4%, Nutrition declined 14.8%, Participation declined 22.2% from personal baseline for 51 consecutive days."
+    },
+    {
+      "alert_id": "ALT_P021_20260829",
+      "patient_id": "P021",
+      "alert_date": "2026-09-05",
+      "alert_severity": "HIGH",
+      "composite_score": 0.783,
+      "explanation": "Mobility declined 17.5%, Nutrition declined 17.0%, Participation declined 14.9% from personal baseline for 8 consecutive days."
+    },
+    {
+      "alert_id": "ALT_P022_20260612",
+      "patient_id": "P022",
+      "alert_date": "2026-06-13",
+      "alert_severity": "LOW",
+      "composite_score": 0.248,
+      "explanation": "Nutrition declined 6.4% from personal baseline for 2 consecutive days."
+    },
+    {
+      "alert_id": "ALT_P023_20260817",
+      "patient_id": "P023",
+      "alert_date": "2026-08-19",
+      "alert_severity": "LOW",
+      "composite_score": 0.282,
+      "explanation": "Mobility declined 7.7%, Nutrition declined 6.3% from personal baseline for 3 consecutive days."
+    },
+    {
+      "alert_id": "ALT_P023_20260827",
+      "patient_id": "P023",
+      "alert_date": "2026-09-05",
+      "alert_severity": "HIGH",
+      "composite_score": 0.741,
+      "explanation": "Mobility declined 17.8%, Nutrition declined 15.2%, Participation declined 13.5% from personal baseline for 10 consecutive days."
+    }
+  ],
+  "false_negatives": 6,
+  "precision": 0.016,
+  "recall": 0.143,
+  "f1_score": 0.028,
+  "early_detections_1day": 1,
+  "early_detection_rate": 0.143,
+  "detection_rate_2day": 0.143,
+  "detection_rate_3day": 0.143,
+  "detection_rate_5day": 0.143,
+  "avg_lead_time_days": 5.0,
+  "median_lead_time_days": 5.0,
+  "min_lead_time_days": 5,
+  "max_lead_time_days": 5,
+  "lead_times": [
+    5
+  ],
+  "matches": [
+    {
+      "incident_id": "INC001",
+      "patient_id": "P010",
+      "incident_date": "2026-08-31",
+      "incident_type": "Fall",
+      "incident_severity": "Moderate",
+      "alert_id": null,
+      "alert_date": null,
+      "alert_severity": null,
+      "lead_time_days": null,
+      "is_early_detection": false,
+      "is_2day_early": false,
+      "is_3day_early": false,
+      "is_5day_early": false,
+      "is_within_window": false,
+      "composite_score": null,
+      "detection_status": "FALSE_NEGATIVE"
+    },
+    {
+      "incident_id": "INC002",
+      "patient_id": "P012",
+      "incident_date": "2026-08-28",
+      "incident_type": "Fall",
+      "incident_severity": "High",
+      "alert_id": null,
+      "alert_date": null,
+      "alert_severity": null,
+      "lead_time_days": null,
+      "is_early_detection": false,
+      "is_2day_early": false,
+      "is_3day_early": false,
+      "is_5day_early": false,
+      "is_within_window": false,
+      "composite_score": null,
+      "detection_status": "FALSE_NEGATIVE"
+    },
+    {
+      "incident_id": "INC003",
+      "patient_id": "P015",
+      "incident_date": "2026-09-02",
+      "incident_type": "Severe Malnutrition",
+      "incident_severity": "High",
+      "alert_id": null,
+      "alert_date": null,
+      "alert_severity": null,
+      "lead_time_days": null,
+      "is_early_detection": false,
+      "is_2day_early": false,
+      "is_3day_early": false,
+      "is_5day_early": false,
+      "is_within_window": false,
+      "composite_score": null,
+      "detection_status": "FALSE_NEGATIVE"
+    },
+    {
+      "incident_id": "INC004",
+      "patient_id": "P018",
+      "incident_date": "2026-08-30",
+      "incident_type": "Functional Deterioration",
+      "incident_severity": "Moderate",
+      "alert_id": null,
+      "alert_date": null,
+      "alert_severity": null,
+      "lead_time_days": null,
+      "is_early_detection": false,
+      "is_2day_early": false,
+      "is_3day_early": false,
+      "is_5day_early": false,
+      "is_within_window": false,
+      "composite_score": null,
+      "detection_status": "FALSE_NEGATIVE"
+    },
+    {
+      "incident_id": "INC005",
+      "patient_id": "P021",
+      "incident_date": "2026-09-01",
+      "incident_type": "Emergency Visit",
+      "incident_severity": "Moderate",
+      "alert_id": "ALT_P021_20260826",
+      "alert_date": "2026-08-27",
+      "alert_severity": "MEDIUM",
+      "lead_time_days": 5,
+      "is_early_detection": true,
+      "is_2day_early": true,
+      "is_3day_early": true,
+      "is_5day_early": true,
+      "is_within_window": true,
+      "composite_score": 0.406,
+      "detection_status": "TRUE_POSITIVE"
+    },
+    {
+      "incident_id": "INC006",
+      "patient_id": "P005",
+      "incident_date": "2026-09-03",
+      "incident_type": "Hospitalization",
+      "incident_severity": "High",
+      "alert_id": null,
+      "alert_date": null,
+      "alert_severity": null,
+      "lead_time_days": null,
+      "is_early_detection": false,
+      "is_2day_early": false,
+      "is_3day_early": false,
+      "is_5day_early": false,
+      "is_within_window": false,
+      "composite_score": null,
+      "detection_status": "FALSE_NEGATIVE"
+    },
+    {
+      "incident_id": "INC007",
+      "patient_id": "P006",
+      "incident_date": "2026-07-22",
+      "incident_type": "Emergency Visit",
+      "incident_severity": "Moderate",
+      "alert_id": null,
+      "alert_date": null,
+      "alert_severity": null,
+      "lead_time_days": null,
+      "is_early_detection": false,
+      "is_2day_early": false,
+      "is_3day_early": false,
+      "is_5day_early": false,
+      "is_within_window": false,
+      "composite_score": null,
+      "detection_status": "FALSE_NEGATIVE"
+    }
+  ],
+  "target_achievement": {
+    "target_detection_rate": 0.7,
+    "achieved_detection_rate": 0.14285714285714285,
+    "target_met": false
+  }
+}
