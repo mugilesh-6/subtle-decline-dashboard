@@ -125,6 +125,9 @@ def compute_freshness(
             "explanation":            "Observation timestamp is in the future.",
         }
 
+    # WHY: A 0.05-hour (+3 min) tolerance is added to boundary comparisons to prevent 
+    # sub-second timestamp floating-point rounding precision errors from incorrectly 
+    # categorizing data that is exactly 24 or 72 hours old as STALE or MISSING.
     if age_hours <= FRESHNESS_FRESH_HOURS + 0.05:
         status = FreshnessStatus.FRESH
         days_int = int(age_days)

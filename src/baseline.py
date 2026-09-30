@@ -137,6 +137,9 @@ def compute_z_score(current_value: float, mean_val: float, std_val: float) -> Op
     if any(v is None or (isinstance(v, float) and np.isnan(v))
            for v in [current_value, mean_val, std_val]):
         return None
+    # WHY: Zero variance means all values in the baseline window were identical.
+    # In this case, z-score is mathematically undefined (0/0). Returning None
+    # prevents generating false zero-z-scores that could mask actual deviations.
     if std_val == 0.0:
         return None   # Zero variance → z-score is undefined, not 0
     return (current_value - mean_val) / std_val

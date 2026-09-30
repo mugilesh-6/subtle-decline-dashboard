@@ -4,430 +4,335 @@
 
 A comprehensive decision-support dashboard for monitoring functional decline in older adults across mobility, nutrition, and participation domains. The system combines synthetic daily observations from multiple care sources to detect subtle changes before they become major adverse events.
 
+---
+
 ## ⚠️ Important Safety Disclaimer
 
 **This is a demonstration prototype using synthetic data. It is NOT a medical device and must NOT be used to diagnose diseases or make clinical decisions without appropriate professional oversight.**
 
-## Problem Statement
+---
 
-Families and care coordinators often notice functional decline in older adults only after a major adverse event occurs (falls, hospitalizations, severe malnutrition). This reactive approach can lead to:
+## 1. System Architecture
 
-- Late intervention opportunities
-- Preventable emergency situations  
-- Increased healthcare costs
-- Reduced quality of life
-
-## Solution Approach
-
-The Subtle-Decline Dashboard provides:
-
-- **Personal Baseline Comparison**: Individual baselines rather than population averages
-- **Multi-Domain Monitoring**: Mobility, nutrition, and participation tracking
-- **Sustained Decline Detection**: Requires consecutive days of meaningful decline 
-- **Data Freshness Management**: Explicit handling of stale/missing data
-- **Safe Fallback Mode**: Clear warnings when data quality is insufficient
-- **Role-Based Views**: Tailored interfaces for families, coordinators, clinicians, and administrators
-- **Early Detection Measurement**: Quantified performance against synthetic incidents
-
-## Features
-
-### Core Functionality
-- ✅ Synthetic patient data generation (23 patients, 90 days)
-- ✅ Personal baseline calculation (30-day baseline period)
-- ✅ Composite decline scoring with domain weights
-- ✅ Consecutive-day decline detection (minimum 2 days)
-- ✅ Explainable alert generation
-- ✅ Data freshness status (FRESH/STALE/MISSING)
-- ✅ Safe fallback mode for insufficient data
-- ✅ Capacity management for care coordinators
-
-### Dashboard Views
-- 👨‍👩‍👧‍👦 **Family View**: Simple status, trends, and alerts
-- 🏥 **Care Coordinator View**: Alert queue, capacity management, priority filtering
-- 🩺 **Clinician View**: Detailed trends, baseline comparison, alert evidence
-- ⚙️ **Administrator View**: System health, performance metrics, experiment results
-
-### Performance Measurement
-- 🧪 Experiment evaluation against synthetic incidents
-- 📊 Early detection rate calculation
-- 📈 Precision, recall, and F1 score metrics
-- 🔍 False positive and false negative analysis
-
-## Architecture
+The Subtle Decline Dashboard uses a modular, layered decision-support architecture that decouples data generation, data quality assessment, statistical baseline calculation, decline detection, capacity management, and UI rendering.
 
 ```
-Data Sources → Data Validation → Freshness Assessment → Personal Baseline
-     ↓              ↓                    ↓                     ↓
-Decline Detection → Alert Engine → Capacity Management → Role-Based Dashboard
-     ↓              ↓                    ↓                     ↓
-Performance → Experiment → Evaluation → Evidence & Documentation
+┌────────────────────────────────────────────────────────────────────────┐
+│                        DATA GENERATION & INPUT                         │
+│   synthetic_daily_data.csv · synthetic_incidents.csv · Data Quality   │
+└───────────────────────────────────┬────────────────────────────────────┘
+                                    │
+                                    ▼
+┌────────────────────────────────────────────────────────────────────────┐
+│                      DATA QUALITY & TRUST ENGINE                       │
+│    compute_freshness() · detect_contradictions() · compute_trust_state()│
+│    Freshness: FRESH (≤24h) | STALE (>24-72h) | MISSING (>72h)         │
+│    Trust: HIGH | MEDIUM | LOW | INSUFFICIENT_EVIDENCE | QUALITY_ISSUE  │
+└───────────────────────────────────┬────────────────────────────────────┘
+                                    │
+                                    ▼
+┌────────────────────────────────────────────────────────────────────────┐
+│                   ROLLING STATISTICAL BASELINE ENGINE                  │
+│    rolling_mean() · rolling_median() · rolling_std() · compute_z_score()│
+│    14-day rolling window · min 7 valid obs · zero-std safety handling  │
+└───────────────────────────────────┬────────────────────────────────────┘
+                                    │
+                                    ▼
+┌────────────────────────────────────────────────────────────────────────┐
+│                        SUSTAINED DECLINE ENGINE                        │
+│    detect_sustained_decline() · classify_domain_decline_status()       │
+│    ≥3 consecutive declining days (z ≤ -1.0) · composite decline score  │
+│    Severity: LOW (≥0.20) | MEDIUM (≥0.35) | HIGH (≥0.50)               │
+└───────────────────────────────────┬────────────────────────────────────┘
+                                    │
+                                    ▼
+┌────────────────────────────────────────────────────────────────────────┐
+│                      STREAMLIT MULTI-ROLE DASHBOARD                    │
+│    👨‍👩‍👧‍👦 Family View   ·   🏥 Care Coordinator   ·   🩺 Clinician     │
+│    ⚙️ Administrator View   ·   Drill-Down Evidence Panel           │
+└────────────────────────────────────────────────────────────────────────┘
 ```
-
-## Technology Stack
-
-- **Python 3.10+**: Core application logic
-- **Streamlit**: Web dashboard interface  
-- **Pandas**: Data processing and analysis
-- **NumPy**: Numerical computations
-- **Plotly**: Interactive trend visualization
-- **Pytest**: Automated testing framework
-- **Faker**: Synthetic data generation
-
-## Installation
-
-### Prerequisites
-- Python 3.10 or higher
-- pip package manager
-
-### Setup Instructions
-
-1. **Clone/Download Project**
-   ```bash
-   cd subtle-decline-dashboard
-   ```
-
-2. **Install Dependencies**
-   ```bash
-   pip install -r requirements.txt
-   ```
-
-3. **Generate Synthetic Data**
-   ```bash
-   python src/generate_synthetic_data.py
-   ```
-
-4. **Generate Alerts**
-   ```bash
-   python src/alert_engine.py
-   ```
-
-5. **Run Experiment Evaluation**
-   ```bash
-   python src/experiment.py
-   ```
-
-6. **Launch Dashboard**
-   ```bash
-   streamlit run src/dashboard.py
-   ```
-
-7. **Run Tests**
-   ```bash
-   pytest tests/
-   ```
-
-## Quick Start Commands
-
-Execute all components in sequence:
-
-```bash
-# Setup
-pip install -r requirements.txt
-
-# Data Generation
-python src/generate_synthetic_data.py
-
-# Alert Generation  
-python src/alert_engine.py
-
-# Experiment Evaluation
-python src/experiment.py
-
-# Launch Dashboard
-streamlit run src/dashboard.py
-
-# Run Tests
-pytest tests/
-```
-
-## Project Structure
-
-```
-subtle-decline-dashboard/
-├── data/                          # Generated data files
-│   ├── synthetic_daily_data.csv   # Daily patient observations
-│   ├── synthetic_incidents.csv    # Major adverse events
-│   ├── generated_alerts.csv       # System-generated alerts
-│   └── alert_summary.json         # Experiment results
-├── src/                           # Source code
-│   ├── generate_synthetic_data.py # Data generation
-│   ├── alert_engine.py           # Decline detection logic
-│   ├── dashboard.py              # Streamlit interface
-│   ├── experiment.py             # Performance evaluation
-│   └── utils.py                  # Utility functions
-├── tests/                        # Automated tests
-│   ├── test_edge_cases.py        # Edge case testing
-│   └── test_freshness.py         # Data freshness testing
-├── docs/                         # Documentation
-│   ├── architecture_diagram.md   # System architecture
-│   ├── data_schema.md           # Data structure documentation
-│   ├── risk_register.md         # Risk analysis
-│   ├── user_guide.md            # User instructions
-│   └── failure_modes.md         # Operational failure analysis
-├── requirements.txt              # Python dependencies
-└── README.md                    # This file
-```
-
-## Dataset
-
-The system uses synthetic data for demonstration and research purposes:
-
-### Generated Dataset
-- **23 synthetic older-adult profiles**
-- **90-day observation period** (2026-06-08 to 2026-09-05)
-- **2,047 daily observations** across all patients
-- **7 synthetic incidents** (falls, hospitalizations, emergency visits)
-- **64 generated alerts** (LOW: 35, MEDIUM: 21, HIGH: 8)
-
-### Data Structure
-
-### Patient Profiles (23 different patterns)
-- **P001-P023**: Comprehensive scenarios covering:
-  - Stable baseline patients  
-  - Gradual single-domain decline (mobility/nutrition/participation)
-  - Multi-domain decline patterns
-  - Recovery after decline
-  - Missing and stale data scenarios
-  - False positive patterns  
-  - Rapid-onset incident scenarios
-
-### Observation Metrics
-- **Mobility**: Daily steps (2,500-10,000 range)
-- **Nutrition**: Daily calories (1,200-2,800 range)  
-- **Participation**: Activity minutes (10-120 range)
-
-## Alert Generation
-
-### Decline Detection Logic
-1. **Personal Baseline**: Calculate from first 30 valid observations
-2. **Domain Changes**: Compare current values to personal baseline
-3. **Composite Scoring**: Weighted combination (Mobility 40%, Nutrition 30%, Participation 30%)
-4. **Sustained Pattern**: Require minimum 2 consecutive decline days
-5. **Severity Classification**: LOW (≥0.20), MEDIUM (≥0.35), HIGH (≥0.50)
-
-### Safe Fallback Conditions
-- Insufficient baseline data (< 15 observations)
-- Missing critical metrics
-- Stale data (> 1 day old)  
-- Poor observation quality
-- Invalid numeric values
-
-## Dashboard Usage
-
-### Family View
-- Select patient from sidebar
-- View overall status and risk level
-- Monitor mobility, nutrition, participation trends
-- Review active alerts and recent incidents
-- Access simple explanations in non-technical language
-
-### Care Coordinator View  
-- Monitor alert queue across all patients
-- Filter alerts by severity (HIGH/MEDIUM/LOW)
-- Track capacity utilization and workload
-- Identify patients with stale/missing data
-- Manage alert assignments and follow-up
-
-### Clinician View
-- Deep-dive into individual patient data
-- Compare current values against personal baselines
-- Review detailed trend charts with alert markers
-- Examine alert evidence and explanations
-- Access raw observation data and quality metrics
-
-### Administrator View
-- Monitor system health and data quality
-- Review performance metrics and experiment results
-- Track alert distribution by severity
-- Assess data freshness across patient population
-- Evaluate target achievement and detection rates
-
-## Experiment Evaluation
-
-The experiment measures early detection performance:
-
-### Key Metrics
-- **Precision**: True positives / (True positives + False positives)
-- **Recall**: True positives / (True positives + False negatives)
-- **F1 Score**: Harmonic mean of precision and recall
-- **Early Detection Rate**: Incidents detected ≥1 day before occurrence
-- **Average Lead Time**: Mean days between first alert and incident
-
-### Measured Performance (Current Results)
-- **Target**: Detect ≥70% of major events at least 2 days in advance  
-- **Measured Result**: 14.3% (1 of 7 incidents detected ≥2 days early)
-- **Status**: **TARGET NOT ACHIEVED**
-- **Detection Details**: 
-  - Incidents detected: 1/7 (14.3% recall)
-  - False positives: 63 alerts without subsequent incidents (1.6% precision)
-  - Average lead time: 5.0 days (for detected incidents)
-- **Error Analysis**: System demonstrates high false positive rate, indicating need for improved specificity
-
-## Testing
-
-### Automated Test Coverage
-- **Edge Cases**: Empty data, missing columns, invalid values, insufficient baselines
-- **Data Freshness**: Fresh, stale, and missing data scenarios  
-- **Decline Detection**: Stable patients, gradual decline, multi-domain decline, recovery patterns
-- **Utility Functions**: Percentage changes, severity classification, capacity management
-
-### Running Tests
-```bash
-# Run all tests
-pytest tests/
-
-# Run with verbose output
-pytest tests/ -v
-
-# Run specific test file
-pytest tests/test_edge_cases.py
-```
-
-**Expected Result**: 38 tests passing
-
-## Configuration
-
-### Alert Severity Thresholds
-```python
-SEVERITY_THRESHOLDS = {
-    'LOW': 0.20,      # 20% composite decline score
-    'MEDIUM': 0.35,   # 35% composite decline score  
-    'HIGH': 0.50      # 50% composite decline score
-}
-```
-
-### Domain Weights
-```python
-DOMAIN_WEIGHTS = {
-    'mobility': 0.40,      # 40% weight
-    'nutrition': 0.30,     # 30% weight
-    'participation': 0.30  # 30% weight
-}
-```
-
-### System Limits
-```python
-MIN_CONSECUTIVE_DAYS = 2        # Minimum decline duration
-BASELINE_PERIOD_DAYS = 30       # Baseline calculation period
-COORDINATOR_MAX_CAPACITY = 8    # Maximum alerts per coordinator
-EARLY_DETECTION_WINDOW_DAYS = 7 # Early detection evaluation window
-```
-
-## Data Schema
-
-### Daily Observations
-- `patient_id`: Unique patient identifier
-- `patient_name`: Patient display name
-- `observation_date`: Date of observation (YYYY-MM-DD)
-- `mobility_steps`: Daily step count
-- `nutrition_kcal`: Daily caloric intake
-- `participation_minutes`: Daily activity participation
-- `data_source`: Source system (e.g., "Wearable Device")
-- `observation_quality`: Data quality ("Good", "Fair", "Poor")
-
-### Generated Alerts
-- `alert_id`: Unique alert identifier
-- `patient_id`: Associated patient  
-- `decline_start_date`: When decline pattern began
-- `alert_date`: When alert was generated
-- `duration_days`: Length of decline period
-- `domains_affected`: Which domains show decline
-- `composite_score`: Calculated decline severity
-- `severity`: Classification (LOW/MEDIUM/HIGH)
-- `explanation`: Human-readable alert reason
-
-## Known Limitations
-
-### Current System Limitations
-- **Detection Performance**: Currently achieving 14.3% recall vs 70% target
-- **High False Positive Rate**: 63 false alerts for 1 true detection (precision 1.6%)
-- **Algorithmic Limitations**: Rule-based detection may be too sensitive
-- **Rapid-Onset Events**: Cannot reliably detect incidents with <2 day warning periods
-- **Data Patterns**: May require more sophisticated pattern recognition for subtle decline
-
-### Operational Limitations  
-- Requires consistent daily observations
-- Cannot detect rapid-onset emergencies
-- May generate false positives during temporary illness
-- Depends on data quality from external sources
-- Limited to three monitored domains
-
-### Clinical Limitations
-- **NOT a medical diagnostic tool**
-- **NOT validated for clinical decision-making**
-- **Requires human professional oversight**
-- **Does not replace clinical judgment**
-- **Synthetic data does not reflect real patient complexity**
-
-## Safety Considerations
-
-### Risk Mitigation
-1. **Clear Disclaimers**: Every interface includes medical disclaimer
-2. **Safe Fallback**: System refuses recommendations with poor data quality  
-3. **Human Oversight**: All alerts require professional review
-4. **Data Quality Warnings**: Explicit stale/missing data indicators
-5. **Capacity Limits**: Prevents coordinator overload
-6. **Audit Trail**: Complete alert history and explanations
-
-### Data Privacy
-- Uses only synthetic/test data
-- No real patient information processed
-- No external data transmission  
-- Local file-based storage only
-
-## Future Improvements
-
-### Technical Enhancements
-- Machine learning-based decline detection
-- Personalized domain weights and thresholds  
-- Integration with real electronic health records
-- Mobile application for family members
-- Advanced time-series analysis
-
-### Clinical Enhancements  
-- Additional monitoring domains (sleep, cognition, social)
-- Clinical decision support integration
-- Care plan recommendation engine
-- Provider workflow optimization
-- Outcome tracking and validation
-
-### Operational Enhancements
-- Real-time data streaming
-- Automated care coordination workflows
-- Family notification systems
-- Quality improvement analytics
-- Multi-site deployment support
-
-## Support and Documentation
-
-### Additional Resources
-- `docs/user_guide.md`: Detailed user instructions
-- `docs/risk_register.md`: Complete risk analysis  
-- `docs/failure_modes.md`: Operational failure scenarios
-- `docs/architecture_diagram.md`: Technical architecture
-- `docs/data_schema.md`: Complete data documentation
-
-### Getting Help
-- Review test files for usage examples
-- Check experiment output for performance validation
-- Examine generated alerts for detection patterns
-- Run dashboard locally for interactive exploration
-
-## License and Disclaimer
-
-**PROTOTYPE SYSTEM FOR DEMONSTRATION PURPOSES ONLY**
-
-This software is provided "as is" without warranty of any kind. It is intended solely for educational, research, and demonstration purposes. The system:
-
-- Uses synthetic data only
-- Is NOT intended for clinical use  
-- Does NOT provide medical advice
-- Requires professional oversight for any care decisions
-- Has NOT been validated in clinical settings
-
-For any care coordination decisions, consult with qualified healthcare professionals and follow established clinical protocols.
 
 ---
 
-*Last Updated: September 2026*  
-*Version: 1.0.0 - MVP Prototype*
+## 2. Project Directory Structure
+
+```
+subtle-decline-dashboard/
+├── data/                          # CSV and JSON data files
+│   ├── synthetic_daily_data.csv   # 90 days of daily observations (23 patients)
+│   ├── synthetic_incidents.csv    # Synthetic adverse events (falls, hospitalizations)
+│   ├── generated_alerts.csv       # Alerts generated by alert engine
+│   ├── alert_summary.json         # Synthetic incident experiment results
+│   └── benchmark_results.json     # Ground-truth scenario benchmark results
+├── src/                           # Core source modules
+│   ├── __init__.py                # Package initialization
+│   ├── baseline.py                # Rolling statistical baseline engine
+│   ├── data_quality.py            # Freshness, contradiction, & trust state engine
+│   ├── alert_engine.py            # Decline detector & alert generator
+│   ├── dashboard.py               # Streamlit multi-role web interface
+│   ├── generate_synthetic_data.py # Synthetic data generation pipeline
+│   ├── experiment.py              # Performance evaluator against incidents
+│   ├── benchmark.py               # Ground-truth scenario benchmark suite
+│   └── utils.py                   # Data validation & helper functions
+├── tests/                         # Automated test suite (62 items)
+│   ├── test_benchmark_temporal.py # 12 temporal benchmark scenario tests
+│   ├── test_edge_cases.py         # 16 edge case and boundary tests
+│   ├── test_experiment_metrics.py # 11 experiment metric calculation tests
+│   ├── test_freshness.py          # 11 freshness and trust state tests
+│   └── test_regression_suite.py   # 12 explicit regression tests
+├── scratch/                       # Temporary scratch test scripts
+│   └── test_ui_validation.py      # Programmatic UI validation test suite
+├── docs/                          # Architectural & user documentation
+│   ├── architecture_diagram.md
+│   ├── data_schema.md
+│   ├── risk_register.md
+│   ├── user_guide.md
+│   └── failure_modes.md
+├── FINAL_VALIDATION_REPORT.md     # End-to-End UI validation summary report
+├── TECHNICAL_DOCUMENTATION_UPDATE.md # Comprehensive technical documentation update
+├── requirements.txt               # Python package dependencies
+└── README.md                      # System documentation (this file)
+```
+
+---
+
+## 3. Data Flow
+
+1. **Ingestion & Validation**: Daily patient observations read from `synthetic_daily_data.csv`. `validate_dataframe()` verifies schema integrity and column presence.
+2. **Quality & Freshness Assessment**: `assess_patient_data_quality()` inspects data age, missing domains, duplicate timestamps, and out-of-range values. Computes `domain_freshness` and `trust_state`.
+3. **Rolling Baseline Calculation**: `compute_patient_baseline_summary()` calculates 14-day rolling mean, median, standard deviation, and z-score per patient per domain (`mobility`, `nutrition`, `participation`).
+4. **Sustained Decline Detection**: `detect_sustained_decline()` evaluates if $\ge 3$ consecutive observations have $z \le -1.0$.
+5. **Alert Scoring & Gating**: `_compute_composite_score()` calculates weighted decline score. If `trust_state.allow_alert` is `True` and composite score $\ge 0.20$, alert is generated and written to `generated_alerts.csv`.
+6. **Dashboard Visualization**: Streamlit (`src/dashboard.py`) renders role-specific views with explicit text badges (`🟢 FRESH`, `🟡 STALE`, `🔴 MISSING`), Plotly trend charts, and statistical drill-down evidence panels.
+
+---
+
+## 4. Data Schema
+
+### API Endpoints
+> **API Endpoints**: Not applicable. The current prototype is implemented as a Streamlit application and does not expose REST API endpoints.
+
+### Database
+> **Database**: Not applicable. The current prototype uses CSV/JSON-based file storage and does not use a database.
+
+### File Schemas
+
+#### A. Daily Observations (`data/synthetic_daily_data.csv`)
+| Column Name | Data Type | Description | Valid Range / Example |
+| :--- | :--- | :--- | :--- |
+| `patient_id` | String | Unique patient identifier | `P001` - `P023` |
+| `patient_name` | String | Patient display name | `"Alice Johnson"` |
+| `observation_date` | String | Observation date (`YYYY-MM-DD`) | `"2026-06-08"` to `"2026-09-05"` |
+| `mobility_steps` | Integer | Daily step count | `0` to `25,000` steps |
+| `nutrition_kcal` | Integer | Daily caloric intake | `200` to `6,000` kcal |
+| `participation_minutes` | Integer | Daily participation time | `0` to `1,440` minutes |
+| `data_source` | String | Origin source of observation | `"Wearable Device"`, `"Manual Entry"`, `"Estimated"` |
+| `observation_quality` | String | Recorded source quality tier | `"Good"`, `"Fair"`, `"Poor"` |
+
+#### B. Synthetic Incidents (`data/synthetic_incidents.csv`)
+| Column Name | Data Type | Description | Valid Range / Example |
+| :--- | :--- | :--- | :--- |
+| `incident_id` | String | Unique incident identifier | `INC001` - `INC007` |
+| `patient_id` | String | Associated patient identifier | `P010` |
+| `incident_date` | String | Date incident occurred (`YYYY-MM-DD`) | `"2026-08-31"` |
+| `incident_type` | String | Type of adverse event | `"Fall"`, `"Severe Malnutrition"`, `"Functional Deterioration"`, `"Emergency Visit"`, `"Hospitalization"` |
+| `severity` | String | Clinical severity rating | `"High"`, `"Moderate"` |
+
+#### C. Generated Alerts (`data/generated_alerts.csv`)
+| Column Name | Data Type | Description | Valid Range / Example |
+| :--- | :--- | :--- | :--- |
+| `alert_id` | String | Unique alert identifier | UUID string |
+| `patient_id` | String | Associated patient identifier | `P002` |
+| `patient_name` | String | Patient display name | `"Bob Smith"` |
+| `decline_start_date` | String | Date sustained decline pattern began | `"2026-08-01"` |
+| `alert_date` | String | Date alert was triggered | `"2026-08-04"` |
+| `duration_days` | Integer | Consecutive days of decline | `3` to `30` |
+| `domains_affected` | String | Comma-separated affected domains | `"Mobility, Nutrition"` |
+| `composite_score` | Float | Weighted composite decline score | `0.000` to `1.000` |
+| `severity` | String | Severity classification | `"LOW"`, `"MEDIUM"`, `"HIGH"` |
+| `explanation` | String | Human-readable alert reason | `"Mobility declined 15.2% from personal baseline..."` |
+| `mobility_delta` | Float | Mobility % change from rolling mean | `-100.0` to `+100.0` |
+| `nutrition_delta` | Float | Nutrition % change from rolling mean | `-100.0` to `+100.0` |
+| `participation_delta` | Float | Participation % change from rolling mean | `-100.0` to `+100.0` |
+| `trust_level` | String | Data quality trust state | `"HIGH_CONFIDENCE"`, `"MEDIUM_CONFIDENCE"`, `"LOW_CONFIDENCE"` |
+
+---
+
+## 5. Generated Output Files
+
+1. **`data/generated_alerts.csv`**: Contains active alerts emitted by `src/alert_engine.py`.
+2. **`data/alert_summary.json`**: Performance evaluation metrics generated by `src/experiment.py` (Precision, Recall, F1, lead time, target achievement).
+3. **`data/benchmark_results.json`**: Scenario evaluation results generated by `src/benchmark.py` comparing the baseline head-30 static method against the improved rolling z-score method across scenarios TC1–TC7.
+
+---
+
+## 6. Baseline Calculation
+
+The baseline engine ([src/baseline.py](file:///c:/Users/6dmug/OneDrive/Desktop/sccp/subtle-decline-dashboard/src/baseline.py)) computes patient-specific, domain-specific rolling statistics over a 14-observation window (`BASELINE_WINDOW = 14`).
+
+- **Rolling Mean**: $\bar{x}_t = \frac{1}{k} \sum_{i=t-k+1}^{t} x_i$ ($k \ge 7$)
+- **Rolling Median**: $\tilde{x}_t = \text{median}(x_{t-k+1}, \dots, x_t)$
+- **Rolling Standard Deviation**: $s_t = \sqrt{\frac{1}{k-1} \sum_{i=t-k+1}^{t} (x_i - \bar{x}_t)^2}$ (sample std with `ddof=1`)
+- **Z-Score**: $z_t = \frac{x_t - \bar{x}_t}{s_t}$
+- **Zero-Variance Safety Handling**: If $s_t = 0.0$ (all values in window identical), $z_t$ evaluates to `None` (never `0.0`). This prevents false zero z-scores from masking sudden drops.
+- **Minimum Period Requirement**: Requires $N \ge 7$ valid observations (`MIN_BASELINE_OBSERVATIONS = 7`). If $N < 7$, stats return sentinel `INSUFFICIENT_BASELINE`.
+
+---
+
+## 7. Decline Detection
+
+Decline detection ([src/alert_engine.py](file:///c:/Users/6dmug/OneDrive/Desktop/sccp/subtle-decline-dashboard/src/alert_engine.py)) evaluates sustained negative deviations from personal rolling baselines:
+
+1. **Sustained Condition**: Requires $\ge 3$ consecutive observations (`SUSTAINED_DECLINE_DAYS = 3`) with $z \le -1.0$ (`Z_SCORE_WARNING_THRESHOLD = -1.0`).
+2. **Domain Weights**:
+   - Mobility: `0.40`
+   - Nutrition: `0.30`
+   - Participation: `0.30`
+3. **Component Score Transformation**: Only negative z-scores (declines) contribute:
+   $$c_{\text{domain}} = \min\left(1.0, \frac{|z|}{2.0}\right) \quad (\text{if } z \le -1.0, \text{ else } 0.0)$$
+4. **Composite Score**: $S_{\text{composite}} = 0.40 \cdot c_{\text{mobility}} + 0.30 \cdot c_{\text{nutrition}} + 0.30 \cdot c_{\text{participation}}$
+5. **Severity Classification**:
+   - `HIGH`: $S_{\text{composite}} \ge 0.50$
+   - `MEDIUM`: $S_{\text{composite}} \ge 0.35$
+   - `LOW`: $S_{\text{composite}} \ge 0.20$
+   - `NONE`: $S_{\text{composite}} < 0.20$
+
+---
+
+## 8. Trust / Confidence States
+
+The data quality engine ([src/data_quality.py](file:///c:/Users/6dmug/OneDrive/Desktop/sccp/subtle-decline-dashboard/src/data_quality.py)) computes `trust_state` using a strict, conservative hierarchical decision rule where the most severe quality condition wins:
+
+| Trust Level | Trigger Condition | Automated Escalation Allowed | Safe Fallback Action |
+| :--- | :--- | :---: | :--- |
+| `DATA_QUALITY_ISSUE` | Contradictory, duplicate, negative, or impossible values detected | `False` | Recommendation withheld — source observations contradictory. Review raw data. |
+| `INSUFFICIENT_EVIDENCE` | Critical domain missing ($>72\text{h}$) or baseline $<7$ observations | `False` | Insufficient current evidence — collect updated observations before escalating. |
+| `LOW_CONFIDENCE` | Critical domain stale ($>24\text{h}$ to $72\text{h}$) or partial data | `False` | Low confidence — stale or partial data detected. Add to review queue. |
+| `MEDIUM_CONFIDENCE` | Non-critical domain stale, critical domains fresh | `True` | Medium confidence — non-critical data stale. Alert generated for review. |
+| `HIGH_CONFIDENCE` | All critical domains FRESH ($\le 24\text{h}$) and baseline sufficient | `True` | Normal detection logic applies. High-confidence alert permitted. |
+
+---
+
+## 9. Freshness States
+
+Data freshness is evaluated by elapsed hours since the last valid observation:
+
+- **`🟢 FRESH`**: Age $\le 24.0$ hours (with $+0.05\text{h}$ microsecond precision tolerance).
+- **`🟡 STALE`**: Age $> 24.0$ hours and $\le 72.0$ hours.
+- **`🔴 MISSING`**: Age $> 72.0$ hours or no data recorded.
+- **`⚠️ INSUFFICIENT`**: Fewer than 7 valid baseline observations available.
+- **`❌ CONTRADICTORY`**: Timestamp in future or impossible values detected.
+
+> **Accessibility Note**: Text badges are explicitly rendered alongside color styling in Streamlit (`🟢 FRESH`, `🟡 STALE`, `🔴 MISSING`) to ensure color-blind accessibility.
+
+---
+
+## 10. Safe Fallback Behavior
+
+Whenever data quality, freshness, or baseline adequacy criteria fail:
+1. `allow_alert` is set to `False`, preventing automatic high-confidence escalation.
+2. High-confidence recommendation text is replaced with safe fallback explanation.
+3. Expanded technical detail panels display exact quality issues (stale hours, missing observation count, contradiction details).
+
+---
+
+## 11. Capacity Handling
+
+Care coordinator workload limits are managed in [src/utils.py](file:///c:/Users/6dmug/OneDrive/Desktop/sccp/subtle-decline-dashboard/src/utils.py):
+- **Max Capacity**: `COORDINATOR_MAX_CAPACITY = 8` high-priority alerts per coordinator.
+- **Utilization Calculation**: $\text{utilization\_pct} = \left(\frac{\text{assigned\_alerts}}{\text{max\_capacity}}\right) \times 100$
+- **Status Thresholds**:
+  - $< 80\%$: `NORMAL` (`✅`)
+  - $80\%$ to $100\%$: `WARNING` / `AT CAPACITY` (`⚠️`)
+  - $> 100\%$: `OVER CAPACITY` (`⚠️`)
+
+---
+
+## 12. Testing Strategy
+
+The project employs a 62-item automated test suite using `pytest`:
+
+```
+tests/
+├── test_benchmark_temporal.py (12 items) - Evaluates scenarios TC1-TC7 across timeline
+├── test_edge_cases.py         (16 items) - Tests empty, malformed, out-of-range, NaN data
+├── test_experiment_metrics.py (11 items) - Tests precision, recall, F1, lead time math
+├── test_freshness.py          (11 items) - Tests hour-based freshness & trust states
+└── test_regression_suite.py   (12 items) - Explicit boundary regression assertions
+```
+
+---
+
+## 13. Error Boundaries
+
+| Error Condition | Detection Criteria | System Response | Trust State | Escalation Allowed | User Interface Display |
+| :--- | :--- | :--- | :--- | :---: | :--- |
+| **Missing Observations** | Observation age $>72\text{h}$ or column missing | Status set to `STALE_DATA`/`MISSING` | `INSUFFICIENT_EVIDENCE` | `False` | `🔴 MISSING` text badge, fallback warning banner |
+| **Stale Observations** | Observation age $>24\text{h}$ and $\le 72\text{h}$ | Status set to `STALE_DATA` | `LOW_CONFIDENCE` | `False` | `🟡 STALE` text badge, low-confidence review banner |
+| **Insufficient Baseline** | Valid observations $N < 7$ | Rolling stats return `INSUFFICIENT_BASELINE` | `INSUFFICIENT_EVIDENCE` | `False` | `⚪ Insufficient Baseline` badge, info callout |
+| **Contradictory / Invalid** | Duplicate dates, negative steps, future timestamp | `detect_contradictions()` flags issues | `DATA_QUALITY_ISSUE` | `False` | `❌ DATA QUALITY ISSUE` badge, error callout |
+| **Missing Domains** | Entire metric column missing from DataFrame | Domain marked `MISSING` | `INSUFFICIENT_EVIDENCE` | `False` | `🔴 MISSING` badge for domain column |
+| **Temporary Anomalies** | Single-day drop below warning threshold | Consecutive count reset on recovery | `HIGH_CONFIDENCE` | `False` | Status `STABLE`, no alert generated |
+| **Invalid Input** | Missing required columns in DataFrame | `validate_dataframe()` returns errors | `INSUFFICIENT_EVIDENCE` | `False` | Error notification: "No data available" |
+| **Empty Data** | Input DataFrame is empty (`df.empty == True`) | `get_patient_current_status()` returns `NO_DATA` | `INSUFFICIENT_EVIDENCE` | `False` | Info banner: "No patient information available" |
+
+---
+
+## 14. Benchmark / Experiment Methodology
+
+### A. Synthetic Incidents Experiment (`src/experiment.py`)
+- Evaluates detection against 7 synthetic incidents across 23 patients.
+- Matches alerts to incidents using 1-to-1 matching (first alert prior to incident within 7-day window).
+- Calculates precision, recall, F1 score, and lead time.
+
+### B. Controlled Ground-Truth Benchmark (`src/benchmark.py`)
+- Evaluates 7 ground-truth scenarios (TC1–TC7) step-by-step temporally over a 60-day observation window.
+- Compares **Baseline Method** (head-30 static mean) vs **Improved Method** (rolling z-score + trust gating).
+- Validates safety checks for TC4 (missing data safe fallback), TC5 (stale data confidence reduction), and TC6 (temporary anomaly isolation).
+
+---
+
+## 15. Known Limitations
+
+1. **Synthetic Data Only**: All patient profiles, observations, and incidents are synthetically generated and have **NOT** been clinically validated.
+2. **Rolling Window Plateauing**: In long-duration declines, rolling-window baselines eventually adjust to lower values if evaluation is restricted to a single end snapshot. Temporal day-by-day evaluation resolves this limit.
+3. **No Database / REST API**: The system runs locally using CSV/JSON files and Streamlit UI.
+
+---
+
+## 16. How to Run the Application
+
+```bash
+# 1. Install dependencies
+pip install -r requirements.txt
+
+# 2. Generate synthetic data
+python src/generate_synthetic_data.py
+
+# 3. Run alert engine
+python src/alert_engine.py
+
+# 4. Run experiment evaluation
+python src/experiment.py
+
+# 5. Launch Streamlit Dashboard
+streamlit run src/dashboard.py
+```
+
+---
+
+## 17. How to Run Tests
+
+```bash
+# Run complete test suite (62 items)
+pytest tests/
+
+# Run temporal benchmark suite specifically (12 items)
+pytest tests/test_benchmark_temporal.py
+
+# Run with verbose test details
+pytest tests/ -v
+```
+
+**Expected Automated Result**: 62 / 62 PASS (100% success rate).
