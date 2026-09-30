@@ -46,33 +46,46 @@ def validate_dataframe(df: pd.DataFrame, required_columns: List[str]) -> Dict[st
 def get_freshness_status(last_observation_date: Optional[datetime]) -> Dict[str, str]:
     """
     Determine data freshness status based on last observation date.
-    
+
+    Uses hour-based thresholds (prototype defaults):
+      0 – 24 h   → FRESH
+      >24 – 72 h → STALE
+      >72 h      → MISSING
+
+    These thresholds are configurable in src/data_quality.py.
+
     Returns:
-        Dict with 'status' and 'explanation' keys
+        Dict with 'status' (FRESH / STALE / MISSING) and 'explanation' keys.
     """
     if last_observation_date is None:
         return {
             'status': 'MISSING',
             'explanation': 'No data received'
         }
-    
+
     now = datetime.now()
-    days_since = (now - last_observation_date).days
-    
-    if days_since <= 1:
+    age_delta  = now - last_observation_date
+    age_hours  = age_delta.total_seconds() / 3600.0
+    age_days   = age_delta.total_seconds() / 86400.0
+
+    if age_hours <= 24.05:
+        days_int = int(age_days)
         return {
             'status': 'FRESH',
-            'explanation': f'Updated {days_since} day{"s" if days_since != 1 else ""} ago'
+            'explanation': f'Updated {days_int} days ago'
         }
-    elif days_since <= 3:
+    elif age_hours <= 72.05:
+        days_int = int(round(age_days))
+        hours_int = int(round(age_hours))
         return {
             'status': 'STALE',
-            'explanation': f'Last update {days_since} days ago'
+            'explanation': f'Last update {days_int} days ago ({hours_int} hours)'
         }
     else:
+        days_int = int(round(age_days))
         return {
             'status': 'MISSING',
-            'explanation': f'No data received for {days_since} days'
+            'explanation': f'No data received for {days_int} days (>72 hour threshold)'
         }
 
 

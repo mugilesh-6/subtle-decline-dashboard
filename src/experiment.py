@@ -294,9 +294,9 @@ class ExperimentEvaluator:
         
         print(f"\nTARGET vs MEASURED RESULTS:")
         target_info = self.results['target_achievement']
-        print(f"- Target: Detect ≥70% of incidents ≥2 days before event")
+        print(f"- Target: Detect >=70% of incidents >=2 days before event")
         print(f"- Measured: {target_info['achieved_detection_rate']:.1%}")
-        print(f"- Status: {'✓ TARGET ACHIEVED' if target_info['target_met'] else '✗ TARGET NOT ACHIEVED'}")
+        print(f"- Status: {'[PASS] TARGET ACHIEVED' if target_info['target_met'] else '[FAIL] TARGET NOT ACHIEVED'}")
         
         print(f"\nDETECTION PERFORMANCE (INCIDENT-BASED):")
         print(f"- Unique Incidents Detected: {self.results['true_positives']} / {self.results['total_incidents']}")
@@ -307,10 +307,10 @@ class ExperimentEvaluator:
         print(f"- F1 Score: {self.results['f1_score']:.3f}")
         
         print(f"\nEARLY DETECTION ANALYSIS:")
-        print(f"- Incidents detected ≥1 day early: {self.results['early_detections_1day']} ({self.results['early_detection_rate']:.1%})")
-        print(f"- Incidents detected ≥2 days early: {self.results['detection_rate_2day']:.1%}")
-        print(f"- Incidents detected ≥3 days early: {self.results['detection_rate_3day']:.1%}")
-        print(f"- Incidents detected ≥5 days early: {self.results['detection_rate_5day']:.1%}")
+        print(f"- Incidents detected >=1 day early: {self.results['early_detections_1day']} ({self.results['early_detection_rate']:.1%})")
+        print(f"- Incidents detected >=2 days early: {self.results['detection_rate_2day']:.1%}")
+        print(f"- Incidents detected >=3 days early: {self.results['detection_rate_3day']:.1%}")
+        print(f"- Incidents detected >=5 days early: {self.results['detection_rate_5day']:.1%}")
         
         if self.results['lead_times']:
             print(f"\nLEAD TIME ANALYSIS:")
@@ -322,24 +322,24 @@ class ExperimentEvaluator:
         successful_detections = [m for m in self.results['matches'] if m['detection_status'] == 'TRUE_POSITIVE']
         if successful_detections:
             for match in successful_detections:
-                print(f"  • {match['patient_id']}: {match['incident_type']} detected {match['lead_time_days']} days early")
+                print(f"  - {match['patient_id']}: {match['incident_type']} detected {match['lead_time_days']} days early")
         else:
-            print("  • No successful early detections")
+            print("  - No successful early detections")
         
         print(f"\nFALSE NEGATIVE EXAMPLES:")
         missed_incidents = [m for m in self.results['matches'] if m['detection_status'] == 'FALSE_NEGATIVE']
         if missed_incidents:
             for match in missed_incidents:
-                print(f"  • {match['patient_id']}: {match['incident_type']} on {format_date(match['incident_date'])} - No prior alert")
+                print(f"  - {match['patient_id']}: {match['incident_type']} on {format_date(match['incident_date'])} - No prior alert")
         else:
-            print("  • No missed incidents")
+            print("  - No missed incidents")
         
         print(f"\nFALSE POSITIVE EXAMPLES:")
         if error_analysis['false_positive_examples']:
             for fp in error_analysis['false_positive_examples'][:3]:
-                print(f"  • {fp['patient_id']}: Alert on {fp['alert_date']} - No subsequent incident")
+                print(f"  - {fp['patient_id']}: Alert on {fp['alert_date']} - No subsequent incident")
         else:
-            print("  • No false positive alerts")
+            print("  - No false positive alerts")
         
         print("\n" + "="*60)
 
@@ -390,7 +390,7 @@ def main():
         
         json.dump(json_results, f, indent=2)
     
-    print(f"\n✓ Experiment results saved to {summary_file}")
+    print(f"\n[OK] Experiment results saved to {summary_file}")
     
     return results
 

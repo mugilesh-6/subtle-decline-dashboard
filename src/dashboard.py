@@ -18,12 +18,22 @@ try:
         calculate_capacity_utilization, format_date, validate_dataframe
     )
     from .alert_engine import DeclineDetector
+    from .data_quality import FreshnessStatus, TrustLevel
+    from .baseline import (
+        BASELINE_WINDOW, MIN_BASELINE_OBSERVATIONS, SUSTAINED_DECLINE_DAYS,
+        Z_SCORE_WARNING_THRESHOLD, Z_SCORE_ALERT_THRESHOLD, INSUFFICIENT_BASELINE,
+    )
 except ImportError:
     from utils import (
         get_project_root, load_csv_safely, get_freshness_status,
         calculate_capacity_utilization, format_date, validate_dataframe
     )
     from alert_engine import DeclineDetector
+    from data_quality import FreshnessStatus, TrustLevel
+    from baseline import (
+        BASELINE_WINDOW, MIN_BASELINE_OBSERVATIONS, SUSTAINED_DECLINE_DAYS,
+        Z_SCORE_WARNING_THRESHOLD, Z_SCORE_ALERT_THRESHOLD, INSUFFICIENT_BASELINE,
+    )
 
 # Page configuration
 st.set_page_config(
@@ -425,6 +435,219 @@ def create_trend_chart(patient_data: pd.DataFrame, metric: str, baseline_value: 
     
     return fig
 
+# ─────────────────────────────────────────────────────────────────
+# FRESHNESS / TRUST DISPLAY HELPERS
+# ─────────────────────────────────────────────────────────────────
+
+def _freshness_badge(status: str) -> str:
+    """Return an emoji badge for a freshness status string."""
+    return {
+        FreshnessStatus.FRESH:         "🟢 FRESH",
+        FreshnessStatus.STALE:         "🟡 STALE",
+        FreshnessStatus.MISSING:       "🔴 MISSING",
+        FreshnessStatus.INSUFFICIENT:  "⚠️ INSUFFICIENT",
+        FreshnessStatus.CONTRADICTORY: "❌ CONTRADICTORY",
+    }.get(status, f"❓ {status}")
+
+
+def _trust_badge(trust_level: str) -> str:
+    """Return an emoji badge for a trust level string."""
+    return {
+        TrustLevel.HIGH_CONFIDENCE:      "✅ HIGH CONFIDENCE",
+        TrustLevel.MEDIUM_CONFIDENCE:    "🟡 MEDIUM CONFIDENCE",
+        TrustLevel.LOW_CONFIDENCE:       "⚠️ LOW CONFIDENCE",
+        TrustLevel.INSUFFICIENT_EVIDENCE:"🔴 INSUFFICIENT EVIDENCE",
+        TrustLevel.DATA_QUALITY_ISSUE:   "❌ DATA QUALITY ISSUE",
+    }.get(trust_level, f"❓ {trust_level}")
+
+
+def _decline_status_badge(status: str) -> str:
+    """Return an emoji badge for a decline status string."""
+    return {
+        "STABLE":               "🟢 Stable",
+        "DECLINING":            "🟡 Declining",
+        "SUSTAINED_DECLINE":    "🟠 Sustained Decline",
+        "SIGNIFICANT_DEVIATION":"🔴 Significant Deviation",
+        INSUFFICIENT_BASELINE:  "⚪ Insufficient Baseline",
+    }.get(status, f"❓ {status}")
+
+
+def show_domain_freshness_panel(domain_freshness: Dict[str, Any]) -> None:
+    """
+    Render per-domain freshness indicators using Streamlit components.
+
+    Uses st.success / st.info / st.warning / st.error so that colour-blind
+    users are never relying on colour alone — text labels are always present.
+
+    Args:
+        domain_freshness: dict[domain] → freshness result from data_quality.py
+    """
+    st.markdown("**📡 Data Freshness by Domain**")
+    cols = st.columns(3)
+    domain_labels = {"mobility": "🚶 Mobility", "nutrition": "🍽️ Nutrition",
+                     "participation": "🎯 Participation"}
+
+    for idx, (domain, label) in enumerate(domain_labels.items()):
+        fdata = domain_freshness.get(domain, {})
+        status = fdata.get("freshness_status", FreshnessStatus.MISSING)
+        age    = fdata.get("data_age_hours")
+        expl   = fdata.get("explanation", "No data")
+        n_obs  = fdata.get("n_valid_obs", 0)
+
+        age_str = f"{age:.0f}h ago" if age is not None else "unknown"
+
+        with cols[idx]:
+            if status == FreshnessStatus.FRESH:
+                st.success(f"{label}\n\n{_freshness_badge(status)}\n\n{age_str} · {n_obs} obs")
+            elif status == FreshnessStatus.STALE:
+                st.warning(f"{label}\n\n{_freshness_badge(status)}\n\n{age_str} · {n_obs} obs")
+            elif status == FreshnessStatus.CONTRADICTORY:
+                st.error(f"{label}\n\n{_freshness_badge(status)}\n\n{expl}")
+            else:  # MISSING / INSUFFICIENT
+                st.error(f"{label}\n\n{_freshness_badge(status)}\n\nNo recent data")
+
+
+def show_trust_state_banner(trust_state: Dict[str, Any]) -> None:
+    """
+    Render a prominent trust/evidence state banner.
+
+    This is the key safety component — it prevents the UI from appearing
+    confident when the underlying data does not support confidence.
+
+    Args:
+        trust_state: output of compute_trust_state() from data_quality.py
+    """
+    tl     = trust_state.get("trust_level", TrustLevel.INSUFFICIENT_EVIDENCE)
+    badge  = _trust_badge(tl)
+    action = trust_state.get("recommended_action", "")
+    reasons = trust_state.get("reasons", [])
+
+    if tl == TrustLevel.HIGH_CONFIDENCE:
+        st.success(f"**Evidence State:** {badge}")
+    elif tl == TrustLevel.MEDIUM_CONFIDENCE:
+        st.info(f"**Evidence State:** {badge}  \n{action}")
+    elif tl == TrustLevel.LOW_CONFIDENCE:
+        st.warning(f"**Evidence State:** {badge}  \n{action}")
+    elif tl == TrustLevel.INSUFFICIENT_EVIDENCE:
+        st.error(f"**Evidence State:** {badge}  \n{action}")
+    else:  # DATA_QUALITY_ISSUE
+        st.error(f"**Evidence State:** {badge}  \n{action}")
+
+    if reasons and tl not in (TrustLevel.HIGH_CONFIDENCE,):
+        with st.expander("ℹ️ Why is confidence limited?"):
+            for r in reasons:
+                st.write(f"• {r}")
+
+
+def show_drill_down_evidence(drill_down: Dict[str, Any], patient_name: str) -> None:
+    """
+    Render the full drill-down evidence panel for one patient.
+
+    Answers the question: "Why was this patient flagged?"
+
+    Displays per-domain:
+      - Current value vs rolling mean / median / std
+      - Z-score with colour coding
+      - Consecutive declining observations
+      - Data freshness
+      - Recent observation history (last 7 rows)
+
+    Args:
+        drill_down:   Output of DeclineDetector.get_patient_drill_down().
+        patient_name: Display name.
+    """
+    st.subheader(f"🔍 Evidence Detail — {patient_name}")
+
+    composite = drill_down.get("composite_score", 0.0)
+    trust_state = drill_down.get("trust_state", {})
+
+    col_score, col_trust = st.columns(2)
+    with col_score:
+        st.metric("Composite Decline Score", f"{composite:.3f}",
+                  help="Weighted z-score composite. 0 = no decline, 1 = maximum decline signal.")
+    with col_trust:
+        tl = trust_state.get("trust_level", TrustLevel.INSUFFICIENT_EVIDENCE)
+        st.metric("Evidence State", _trust_badge(tl))
+
+    domain_labels = {"mobility": "🚶 Mobility", "nutrition": "🍽️ Nutrition",
+                     "participation": "🎯 Participation"}
+
+    for domain, label in domain_labels.items():
+        dd = drill_down.get("domain_drill", {}).get(domain, {})
+
+        with st.expander(f"{label} — {_decline_status_badge(dd.get('decline_status', INSUFFICIENT_BASELINE))}",
+                         expanded=(dd.get("is_sustained_decline", False))):
+
+            col1, col2, col3, col4 = st.columns(4)
+
+            current  = dd.get("current_value")
+            r_mean   = dd.get("rolling_mean")
+            r_median = dd.get("rolling_median")
+            r_std    = dd.get("rolling_std")
+            z        = dd.get("z_score")
+            pct      = dd.get("pct_from_mean")
+            consec   = dd.get("consecutive_declining", 0)
+            n_obs    = dd.get("n_valid_obs", 0)
+            b_state  = dd.get("baseline_state", INSUFFICIENT_BASELINE)
+
+            with col1:
+                st.metric("Current Value",
+                          f"{current:,.0f}" if current is not None else "N/A")
+                st.caption(f"Rolling mean: {r_mean:,.1f}" if isinstance(r_mean, float) else "Baseline: insufficient")
+            with col2:
+                if isinstance(r_median, float):
+                    st.metric("Rolling Median", f"{r_median:,.1f}")
+                else:
+                    st.metric("Rolling Median", "N/A")
+                if isinstance(r_std, float):
+                    st.caption(f"Rolling std: ±{r_std:,.1f}")
+                else:
+                    st.caption("Std: insufficient")
+            with col3:
+                if z is not None:
+                    pct_str = f"{pct:+.1f}%" if pct is not None else ""
+                    delta_colour = "inverse" if z < 0 else "normal"
+                    st.metric("Z-Score", f"{z:.2f}", delta=pct_str,
+                              delta_color=delta_colour)
+                    if z <= Z_SCORE_ALERT_THRESHOLD:
+                        st.error(f"z={z:.2f} — significant deviation")
+                    elif z <= Z_SCORE_WARNING_THRESHOLD:
+                        st.warning(f"z={z:.2f} — below warning threshold ({Z_SCORE_WARNING_THRESHOLD})")
+                    else:
+                        st.success(f"z={z:.2f} — within normal range")
+                else:
+                    st.metric("Z-Score", INSUFFICIENT_BASELINE)
+                    st.info(f"Need ≥{MIN_BASELINE_OBSERVATIONS} observations for z-score.")
+            with col4:
+                st.metric("Consecutive Declining", consec,
+                          help=f"Sustained decline threshold: {SUSTAINED_DECLINE_DAYS} days")
+                st.caption(f"Valid observations: {n_obs}")
+                fdata = dd.get("freshness", {})
+                fstatus = fdata.get("freshness_status", FreshnessStatus.MISSING)
+                age_h   = fdata.get("data_age_hours")
+                age_str = f"{age_h:.0f}h old" if age_h is not None else "unknown"
+                st.caption(f"Data: {_freshness_badge(fstatus)} ({age_str})")
+
+            # Recent history table
+            recent_hist = dd.get("recent_history", [])
+            if recent_hist:
+                st.markdown("**Recent observations (newest first):**")
+                hist_df = pd.DataFrame(recent_hist)
+                # Format columns
+                for col_name in ["value", "rolling_mean", "rolling_std"]:
+                    if col_name in hist_df.columns:
+                        hist_df[col_name] = hist_df[col_name].apply(
+                            lambda x: f"{x:,.1f}" if x is not None else "—"
+                        )
+                if "z_score" in hist_df.columns:
+                    hist_df["z_score"] = hist_df["z_score"].apply(
+                        lambda x: f"{x:.2f}" if x is not None else "—"
+                    )
+                st.dataframe(hist_df, use_container_width=True, hide_index=True)
+            else:
+                st.info("No history available (insufficient baseline observations).")
+
+
 def show_family_view(daily_data, alerts_data, incidents_data, selected_patient):
     """Display redesigned family-focused view with improved UX."""
     
@@ -530,6 +753,24 @@ def show_family_view(daily_data, alerts_data, incidents_data, selected_patient):
         st.success(f"✅ **Data Status:** {data_status['message']}")
     else:
         st.info(f"ℹ️ **Data Status:** {data_status['message']}")
+
+    # ── NEW: Trust state banner and per-domain freshness ──────────
+    quality = getattr(detector, '_quality_assessments', {}).get(selected_patient)
+    if quality is None:
+        # compute on demand
+        try:
+            drill = detector.get_patient_drill_down(selected_patient)
+            quality = drill.get('data_quality', {})
+        except Exception:
+            quality = {}
+
+    trust_state = quality.get('trust_state', {}) if quality else {}
+    domain_freshness = quality.get('domain_freshness', {}) if quality else {}
+
+    if trust_state:
+        show_trust_state_banner(trust_state)
+    if domain_freshness:
+        show_domain_freshness_panel(domain_freshness)
     
     # CURRENT STATUS SECTION
     if current_status['status'] == 'CURRENT':
@@ -683,6 +924,14 @@ def show_family_view(daily_data, alerts_data, incidents_data, selected_patient):
                 </div>
                 """, unsafe_allow_html=True)
     
+    # DRILL-DOWN EVIDENCE SECTION (family-friendly summary)
+    with st.expander("🔬 Why is this alert shown? (Evidence Detail)"):
+        try:
+            drill = detector.get_patient_drill_down(selected_patient)
+            show_drill_down_evidence(drill, patient_name)
+        except Exception as e:
+            st.info(f"Evidence detail not available: {e}")
+
     # HELP SECTION
     with st.expander("❓ Understanding This Dashboard"):
         st.write("""
@@ -818,7 +1067,24 @@ def show_clinician_view(daily_data, alerts_data, incidents_data, selected_patien
     # Initialize detector
     detector = DeclineDetector(daily_data)
     current_status = detector.get_patient_current_status(selected_patient)
-    
+
+    # ── Data quality + trust state ────────────────────────────────
+    try:
+        drill = detector.get_patient_drill_down(selected_patient)
+        quality = drill.get('data_quality', {})
+        trust_state = quality.get('trust_state', {})
+        domain_freshness = quality.get('domain_freshness', {})
+    except Exception:
+        drill, quality, trust_state, domain_freshness = {}, {}, {}, {}
+
+    # Trust state banner
+    if trust_state:
+        show_trust_state_banner(trust_state)
+
+    # Per-domain freshness
+    if domain_freshness:
+        show_domain_freshness_panel(domain_freshness)
+
     # Clinical summary
     col1, col2 = st.columns(2)
     
@@ -829,23 +1095,41 @@ def show_clinician_view(daily_data, alerts_data, incidents_data, selected_patien
             st.write(f"**Composite Score:** {current_status['composite_score']:.3f}")
             st.write(f"**Last Observation:** {current_status['last_observation_date']}")
             st.write(f"**Data Age:** {current_status['days_since_observation']} days")
+            # New: trust level
+            tl = current_status.get('trust_level', '')
+            if tl:
+                st.write(f"**Evidence State:** {_trust_badge(tl)}")
         else:
             st.error(f"**Status:** {current_status['status'].replace('_', ' ')}")
             st.write(current_status.get('message', ''))
-    
+
     with col2:
-        st.subheader("📈 Baseline Comparison")
+        st.subheader("📈 Baseline Comparison (Rolling Window)")
         if current_status['status'] == 'CURRENT':
             baseline = current_status['baseline_values']
-            current = current_status['current_values']
-            changes = current_status['percentage_changes']
-            
-            st.write(f"**Mobility:** {current['mobility_steps']:,.0f} steps "
-                    f"(Baseline: {baseline['mobility_baseline']:,.0f}, Change: {changes['mobility_delta']:.1f}%)")
-            st.write(f"**Nutrition:** {current['nutrition_kcal']:,.0f} kcal "
-                    f"(Baseline: {baseline['nutrition_baseline']:,.0f}, Change: {changes['nutrition_delta']:.1f}%)")
-            st.write(f"**Participation:** {current['participation_minutes']:,.0f} min "
-                    f"(Baseline: {baseline['participation_baseline']:,.0f}, Change: {changes['participation_delta']:.1f}%)")
+            current  = current_status['current_values']
+            changes  = current_status['percentage_changes']
+            # Show rolling-baseline z-scores from drill_down
+            dd_domains = drill.get('domain_drill', {}) if drill else {}
+
+            for domain, col_key, label in [
+                ("mobility",      "mobility_steps",        "Mobility"),
+                ("nutrition",     "nutrition_kcal",         "Nutrition"),
+                ("participation", "participation_minutes",  "Participation"),
+            ]:
+                curr_v = current.get(col_key, "N/A")
+                base_v = baseline.get(f"{domain}_baseline", "N/A")
+                chg_v  = changes.get(f"{domain}_delta", 0)
+                z_val  = dd_domains.get(domain, {}).get("z_score")
+                z_str  = f" | z={z_val:.2f}" if z_val is not None else " | z=N/A"
+                st.write(
+                    f"**{label}:** {curr_v:,.0f} "
+                    f"(Baseline: {base_v:,.0f}, Δ: {chg_v:+.1f}%{z_str})"
+                    if isinstance(curr_v, (int, float)) and isinstance(base_v, (int, float))
+                    else f"**{label}:** data unavailable"
+                )
+        else:
+            st.write("Baseline data not available.")
     
     # Detailed trend analysis
     if len(patient_data) > 1:
@@ -888,6 +1172,11 @@ def show_clinician_view(daily_data, alerts_data, incidents_data, selected_patien
                 if fig:
                     st.plotly_chart(fig, use_container_width=True)
     
+    # ── Full drill-down evidence panel ───────────────────────────
+    if drill:
+        st.subheader("🔍 Statistical Evidence Detail")
+        show_drill_down_evidence(drill, patient_name)
+
     # Alert evidence
     if alerts_data is not None and not alerts_data.empty:
         patient_alerts = alerts_data[alerts_data['patient_id'] == selected_patient]
@@ -904,12 +1193,16 @@ def show_clinician_view(daily_data, alerts_data, incidents_data, selected_patien
                         st.write(f"• Duration: {alert['duration_days']} days")
                         st.write(f"• Affected Domains: {alert['domains_affected']}")
                         st.write(f"• Explanation: {alert['explanation']}")
+                        # New: trust level from alert
+                        tl_alert = alert.get('trust_level', '')
+                        if tl_alert:
+                            st.write(f"• Evidence State: {_trust_badge(tl_alert)}")
                     
                     with col2:
-                        st.write("**Domain Changes:**")
-                        st.write(f"• Mobility: {alert['mobility_delta']:.1f}%")
-                        st.write(f"• Nutrition: {alert['nutrition_delta']:.1f}%")
-                        st.write(f"• Participation: {alert['participation_delta']:.1f}%")
+                        st.write("**Domain Changes (from rolling baseline):**")
+                        st.write(f"• Mobility Δ: {alert['mobility_delta']:.1f}%")
+                        st.write(f"• Nutrition Δ: {alert['nutrition_delta']:.1f}%")
+                        st.write(f"• Participation Δ: {alert['participation_delta']:.1f}%")
                         st.write(f"• Composite Score: {alert['composite_score']:.3f}")
     
     # Incident history

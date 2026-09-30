@@ -494,13 +494,13 @@ def main():
     daily_data = generate_daily_observations()
     daily_file = data_dir / "synthetic_daily_data.csv"
     daily_data.to_csv(daily_file, index=False)
-    print(f"✓ Generated {len(daily_data)} daily observations -> {daily_file}")
+    print(f"[OK] Generated {len(daily_data)} daily observations -> {daily_file}")
     
     # Generate incidents
     incidents_data = generate_incidents()
     incidents_file = data_dir / "synthetic_incidents.csv"
     incidents_data.to_csv(incidents_file, index=False)
-    print(f"✓ Generated {len(incidents_data)} incidents -> {incidents_file}")
+    print(f"[OK] Generated {len(incidents_data)} incidents -> {incidents_file}")
     
     # Print summary statistics
     print("\nData Summary:")

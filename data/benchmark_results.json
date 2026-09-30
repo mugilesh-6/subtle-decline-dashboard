@@ -1,0 +1,442 @@
+{
+  "experiment_date": "2026-09-29T11:42:48.952332",
+  "random_seed": 42,
+  "total_scenarios": 7,
+  "ground_truth": [
+    {
+      "scenario_id": "TC1",
+      "name": "Gradual mobility decline",
+      "patient_id": "BM_P001",
+      "decline_start_day": 21,
+      "adverse_event_day": 35,
+      "expected_decline": true,
+      "affected_domains": [
+        "mobility"
+      ],
+      "expected_trust": "HIGH_CONFIDENCE",
+      "description": "Normal baseline -> gradual mobility decline -> adverse event.",
+      "decline_start_date": "2026-08-21",
+      "adverse_event_date": "2026-09-04"
+    },
+    {
+      "scenario_id": "TC2",
+      "name": "Nutrition decline",
+      "patient_id": "BM_P002",
+      "decline_start_day": 21,
+      "adverse_event_day": 35,
+      "expected_decline": true,
+      "affected_domains": [
+        "nutrition"
+      ],
+      "expected_trust": "HIGH_CONFIDENCE",
+      "description": "Normal meal intake -> gradual reduction -> adverse event.",
+      "decline_start_date": "2026-08-21",
+      "adverse_event_date": "2026-09-04"
+    },
+    {
+      "scenario_id": "TC3",
+      "name": "Participation decline",
+      "patient_id": "BM_P003",
+      "decline_start_day": 21,
+      "adverse_event_day": 35,
+      "expected_decline": true,
+      "affected_domains": [
+        "participation"
+      ],
+      "expected_trust": "HIGH_CONFIDENCE",
+      "description": "Normal participation -> gradual reduction -> adverse event.",
+      "decline_start_date": "2026-08-21",
+      "adverse_event_date": "2026-09-04"
+    },
+    {
+      "scenario_id": "TC4",
+      "name": "Missing data -> safe fallback",
+      "patient_id": "BM_P004",
+      "decline_start_day": null,
+      "adverse_event_day": null,
+      "expected_decline": false,
+      "affected_domains": [],
+      "expected_trust": "INSUFFICIENT_EVIDENCE",
+      "description": "Critical observations missing - no high-confidence alert expected.",
+      "decline_start_date": null,
+      "adverse_event_date": null
+    },
+    {
+      "scenario_id": "TC5",
+      "name": "Stale data -> reduced confidence",
+      "patient_id": "BM_P005",
+      "decline_start_day": null,
+      "adverse_event_day": null,
+      "expected_decline": false,
+      "affected_domains": [],
+      "expected_trust": "LOW_CONFIDENCE",
+      "description": "Last update older than freshness threshold - confidence withheld.",
+      "decline_start_date": null,
+      "adverse_event_date": null
+    },
+    {
+      "scenario_id": "TC6",
+      "name": "False positive / temporary anomaly",
+      "patient_id": "BM_P006",
+      "decline_start_day": null,
+      "adverse_event_day": null,
+      "expected_decline": false,
+      "affected_domains": [],
+      "expected_trust": "HIGH_CONFIDENCE",
+      "description": "One abnormal observation then recovery - should NOT be classified as sustained decline.",
+      "decline_start_date": null,
+      "adverse_event_date": null
+    },
+    {
+      "scenario_id": "TC7",
+      "name": "Multi-signal decline",
+      "patient_id": "BM_P007",
+      "decline_start_day": 21,
+      "adverse_event_day": 35,
+      "expected_decline": true,
+      "affected_domains": [
+        "mobility",
+        "nutrition",
+        "participation"
+      ],
+      "expected_trust": "HIGH_CONFIDENCE",
+      "description": "All three domains decline -> stronger composite evidence.",
+      "decline_start_date": "2026-08-21",
+      "adverse_event_date": "2026-09-04"
+    }
+  ],
+  "baseline_method": {
+    "description": "Static head-30 mean + percentage-delta composite (temporal evaluation)",
+    "results": [
+      {
+        "scenario_id": "TC1",
+        "scenario_name": "Gradual mobility decline",
+        "patient_id": "BM_P001",
+        "expected_decline": true,
+        "affected_domains": [
+          "mobility"
+        ],
+        "decline_start_date": "2026-08-21",
+        "adverse_event_date": "2026-09-04",
+        "first_detection_date": "2026-08-25",
+        "alert_generated": true,
+        "result_type": "TP",
+        "severity": "LOW",
+        "composite_score": 0.262,
+        "trust_level": "HIGH_CONFIDENCE",
+        "lead_time_days": 10,
+        "detail": "Baseline method (temporal evaluation: static head-30 mean)"
+      },
+      {
+        "scenario_id": "TC2",
+        "scenario_name": "Nutrition decline",
+        "patient_id": "BM_P002",
+        "expected_decline": true,
+        "affected_domains": [
+          "nutrition"
+        ],
+        "decline_start_date": "2026-08-21",
+        "adverse_event_date": "2026-09-04",
+        "first_detection_date": "2026-08-25",
+        "alert_generated": true,
+        "result_type": "TP",
+        "severity": "LOW",
+        "composite_score": 0.223,
+        "trust_level": "HIGH_CONFIDENCE",
+        "lead_time_days": 10,
+        "detail": "Baseline method (temporal evaluation: static head-30 mean)"
+      },
+      {
+        "scenario_id": "TC3",
+        "scenario_name": "Participation decline",
+        "patient_id": "BM_P003",
+        "expected_decline": true,
+        "affected_domains": [
+          "participation"
+        ],
+        "decline_start_date": "2026-08-21",
+        "adverse_event_date": "2026-09-04",
+        "first_detection_date": "2026-08-23",
+        "alert_generated": true,
+        "result_type": "TP",
+        "severity": "LOW",
+        "composite_score": 0.209,
+        "trust_level": "HIGH_CONFIDENCE",
+        "lead_time_days": 12,
+        "detail": "Baseline method (temporal evaluation: static head-30 mean)"
+      },
+      {
+        "scenario_id": "TC4",
+        "scenario_name": "Missing data -> safe fallback",
+        "patient_id": "BM_P004",
+        "expected_decline": false,
+        "affected_domains": [],
+        "decline_start_date": null,
+        "adverse_event_date": null,
+        "first_detection_date": null,
+        "alert_generated": false,
+        "result_type": "TN",
+        "severity": "NONE",
+        "composite_score": 0.0,
+        "trust_level": "HIGH_CONFIDENCE",
+        "lead_time_days": null,
+        "detail": "Baseline method (temporal evaluation: static head-30 mean)"
+      },
+      {
+        "scenario_id": "TC5",
+        "scenario_name": "Stale data -> reduced confidence",
+        "patient_id": "BM_P005",
+        "expected_decline": false,
+        "affected_domains": [],
+        "decline_start_date": null,
+        "adverse_event_date": null,
+        "first_detection_date": null,
+        "alert_generated": false,
+        "result_type": "TN",
+        "severity": "NONE",
+        "composite_score": 0.0,
+        "trust_level": "HIGH_CONFIDENCE",
+        "lead_time_days": null,
+        "detail": "Baseline method (temporal evaluation: static head-30 mean)"
+      },
+      {
+        "scenario_id": "TC6",
+        "scenario_name": "False positive / temporary anomaly",
+        "patient_id": "BM_P006",
+        "expected_decline": false,
+        "affected_domains": [],
+        "decline_start_date": null,
+        "adverse_event_date": null,
+        "first_detection_date": "2026-08-30",
+        "alert_generated": true,
+        "result_type": "FP",
+        "severity": "HIGH",
+        "composite_score": 0.638,
+        "trust_level": "HIGH_CONFIDENCE",
+        "lead_time_days": null,
+        "detail": "Baseline method (temporal evaluation: static head-30 mean)"
+      },
+      {
+        "scenario_id": "TC7",
+        "scenario_name": "Multi-signal decline",
+        "patient_id": "BM_P007",
+        "expected_decline": true,
+        "affected_domains": [
+          "mobility",
+          "nutrition",
+          "participation"
+        ],
+        "decline_start_date": "2026-08-21",
+        "adverse_event_date": "2026-09-04",
+        "first_detection_date": "2026-08-24",
+        "alert_generated": true,
+        "result_type": "TP",
+        "severity": "LOW",
+        "composite_score": 0.257,
+        "trust_level": "HIGH_CONFIDENCE",
+        "lead_time_days": 11,
+        "detail": "Baseline method (temporal evaluation: static head-30 mean)"
+      }
+    ],
+    "metrics": {
+      "true_positives": 4,
+      "false_positives": 1,
+      "true_negatives": 2,
+      "false_negatives": 0,
+      "precision": 0.8,
+      "recall": 1.0,
+      "f1_score": 0.889,
+      "avg_lead_time_days": 10.8,
+      "median_lead_time_days": 10.5,
+      "min_lead_time_days": 10,
+      "max_lead_time_days": 12,
+      "lead_times": [
+        10,
+        10,
+        12,
+        11
+      ]
+    },
+    "error_analysis": {
+      "false_positives": [
+        {
+          "scenario_id": "TC6",
+          "scenario_name": "False positive / temporary anomaly",
+          "patient_id": "BM_P006",
+          "alert_generated": true,
+          "severity": "HIGH",
+          "composite_score": 0.638,
+          "reason_category": "temporary_anomaly",
+          "detail": "Baseline method (temporal evaluation: static head-30 mean)"
+        }
+      ],
+      "false_negatives": [],
+      "false_positive_count": 1,
+      "false_negative_count": 0
+    }
+  },
+  "improved_method": {
+    "description": "Rolling-window z-score + sustained-decline + trust-state gating (temporal evaluation)",
+    "results": [
+      {
+        "scenario_id": "TC1",
+        "scenario_name": "Gradual mobility decline",
+        "patient_id": "BM_P001",
+        "expected_decline": true,
+        "affected_domains": [
+          "mobility"
+        ],
+        "decline_start_date": "2026-08-21",
+        "adverse_event_date": "2026-09-04",
+        "first_detection_date": "2026-08-24",
+        "alert_generated": true,
+        "result_type": "TP",
+        "severity": "MEDIUM",
+        "composite_score": 0.469,
+        "trust_level": "INSUFFICIENT_EVIDENCE",
+        "lead_time_days": 11,
+        "detail": "Improved method (temporal evaluation: rolling z-score + trust gating)"
+      },
+      {
+        "scenario_id": "TC2",
+        "scenario_name": "Nutrition decline",
+        "patient_id": "BM_P002",
+        "expected_decline": true,
+        "affected_domains": [
+          "nutrition"
+        ],
+        "decline_start_date": "2026-08-21",
+        "adverse_event_date": "2026-09-04",
+        "first_detection_date": "2026-08-23",
+        "alert_generated": true,
+        "result_type": "TP",
+        "severity": "HIGH",
+        "composite_score": 0.537,
+        "trust_level": "INSUFFICIENT_EVIDENCE",
+        "lead_time_days": 12,
+        "detail": "Improved method (temporal evaluation: rolling z-score + trust gating)"
+      },
+      {
+        "scenario_id": "TC3",
+        "scenario_name": "Participation decline",
+        "patient_id": "BM_P003",
+        "expected_decline": true,
+        "affected_domains": [
+          "participation"
+        ],
+        "decline_start_date": "2026-08-21",
+        "adverse_event_date": "2026-09-04",
+        "first_detection_date": "2026-08-14",
+        "alert_generated": true,
+        "result_type": "TP",
+        "severity": "LOW",
+        "composite_score": 0.24,
+        "trust_level": "INSUFFICIENT_EVIDENCE",
+        "lead_time_days": 21,
+        "detail": "Improved method (temporal evaluation: rolling z-score + trust gating)"
+      },
+      {
+        "scenario_id": "TC4",
+        "scenario_name": "Missing data -> safe fallback",
+        "patient_id": "BM_P004",
+        "expected_decline": false,
+        "affected_domains": [],
+        "decline_start_date": null,
+        "adverse_event_date": null,
+        "first_detection_date": null,
+        "alert_generated": false,
+        "result_type": "TN",
+        "severity": "NONE",
+        "composite_score": 0.0,
+        "trust_level": "HIGH_CONFIDENCE",
+        "lead_time_days": null,
+        "detail": "Improved method (temporal evaluation: rolling z-score + trust gating)"
+      },
+      {
+        "scenario_id": "TC5",
+        "scenario_name": "Stale data -> reduced confidence",
+        "patient_id": "BM_P005",
+        "expected_decline": false,
+        "affected_domains": [],
+        "decline_start_date": null,
+        "adverse_event_date": null,
+        "first_detection_date": null,
+        "alert_generated": false,
+        "result_type": "TN",
+        "severity": "NONE",
+        "composite_score": 0.0,
+        "trust_level": "HIGH_CONFIDENCE",
+        "lead_time_days": null,
+        "detail": "Improved method (temporal evaluation: rolling z-score + trust gating)"
+      },
+      {
+        "scenario_id": "TC6",
+        "scenario_name": "False positive / temporary anomaly",
+        "patient_id": "BM_P006",
+        "expected_decline": false,
+        "affected_domains": [],
+        "decline_start_date": null,
+        "adverse_event_date": null,
+        "first_detection_date": null,
+        "alert_generated": false,
+        "result_type": "TN",
+        "severity": "NONE",
+        "composite_score": 0.0,
+        "trust_level": "HIGH_CONFIDENCE",
+        "lead_time_days": null,
+        "detail": "Improved method (temporal evaluation: rolling z-score + trust gating)"
+      },
+      {
+        "scenario_id": "TC7",
+        "scenario_name": "Multi-signal decline",
+        "patient_id": "BM_P007",
+        "expected_decline": true,
+        "affected_domains": [
+          "mobility",
+          "nutrition",
+          "participation"
+        ],
+        "decline_start_date": "2026-08-21",
+        "adverse_event_date": "2026-09-04",
+        "first_detection_date": "2026-08-26",
+        "alert_generated": true,
+        "result_type": "TP",
+        "severity": "HIGH",
+        "composite_score": 0.797,
+        "trust_level": "INSUFFICIENT_EVIDENCE",
+        "lead_time_days": 9,
+        "detail": "Improved method (temporal evaluation: rolling z-score + trust gating)"
+      }
+    ],
+    "metrics": {
+      "true_positives": 4,
+      "false_positives": 0,
+      "true_negatives": 3,
+      "false_negatives": 0,
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1_score": 1.0,
+      "avg_lead_time_days": 13.2,
+      "median_lead_time_days": 11.5,
+      "min_lead_time_days": 9,
+      "max_lead_time_days": 21,
+      "lead_times": [
+        11,
+        12,
+        21,
+        9
+      ]
+    },
+    "error_analysis": {
+      "false_positives": [],
+      "false_negatives": [],
+      "false_positive_count": 0,
+      "false_negative_count": 0
+    }
+  },
+  "safety_checks": {
+    "TC4_missing_data_safe_fallback": true,
+    "TC5_stale_data_confidence_reduced": true,
+    "TC6_temporary_anomaly_not_sustained": true
+  }
+}
